@@ -7,14 +7,20 @@ import { CreateUserDto } from './Models/dto/create-user.dto';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(User) private usersRepositiry: Repository<User>,
+    @InjectRepository(User) private usersRepository: Repository<User>,
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
-    const user = await this.usersRepositiry.create(createUserDto);
+    const user = await this.usersRepository.create(createUserDto);
     await user.save();
 
     delete user.password;
+    return user;
+  }
+
+  async findUser(id: number){
+    const user = await this.usersRepository.findBy({id: id});
+    // console.log("My console ==>"+user)
     return user;
   }
 

@@ -1,5 +1,5 @@
 import { IsEmail, MinLength } from '@nestjs/class-validator';
-import { Entity, Column, PrimaryGeneratedColumn} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
@@ -13,4 +13,7 @@ export class User {
   @Column()
   @MinLength(8)
   password: string;
+
+  @Column()
+  role: string;
 }

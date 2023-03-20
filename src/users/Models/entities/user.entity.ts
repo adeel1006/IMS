@@ -1,31 +1,61 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, BeforeInsert } from "typeorm";
+import {
+  BaseEntity,
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  BeforeInsert,
+  AfterInsert,
+  AfterUpdate,
+  AfterRemove,
+} from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ unique:true })
-    email: string
+  @Column({ unique: true })
+  email: string;
 
-    @Column()
-    password: string;
+  @Column()
+  password: string;
 
-    @Column()
-    @CreateDateColumn()
-    createdAt: Date;
+  @Column()
+  role: string;
 
-    @Column()
-    @UpdateDateColumn()
-    updatedAt: Date;
+  @Column()
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @BeforeInsert()
-    async hashPassword() {
-        this.password = await bcrypt.hash(this.password, 8);
-    }
+  @Column()
+  @UpdateDateColumn()
+  updatedAt: Date;
 
-    async validatePassword(password: string): Promise<boolean> {
-        return bcrypt.compare(password, this.password);
-    }
+  @BeforeInsert()
+  
+  async hashPassword() {
+    this.password = await bcrypt.hash(this.password, 8);
+  }
+
+  async validatePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
+
+  @AfterInsert()
+  logInsert() {
+    console.log(`User inserted with id: ${this.id}`);
+  }
+
+  @AfterUpdate()
+  logUpdate() {
+    console.log(`User updated with id: ${this.id}`);
+  }
+
+  @AfterRemove()
+  logRemove() {
+    console.log(`User removed with id: ${this.id}`);
+  }
 }
