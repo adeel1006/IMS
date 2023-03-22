@@ -19,39 +19,32 @@ export class AuthController {
   async login(@Body() authLoginDto: LoginDto) {
     return this.authService.login(authLoginDto);
   }
-  
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('test')
-  // test(@Request() req: any) {
-  //   return 'Test Access Granted ' + JSON.stringify(req.user);
-  // }
-
-  @UseGuards(JwtAuthGuard, new RoleGuard(CONSTANTS.ROLES.SUPER_ADMIN))
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN]))
   @Get('superAdmin')
   SuperAdmin(@Request() req: any) {
     return 'Super Admin Access Granted ' + JSON.stringify(req.user);
   }
 
-  @UseGuards(JwtAuthGuard, new RoleGuard(CONSTANTS.ROLES.ADMIN))
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.SUPER_ADMIN]),
+  )
   @Get('admin')
   Admin(@Request() req: any) {
     return 'Admin Access Granted ' + JSON.stringify(req.user);
   }
 
-  @UseGuards(JwtAuthGuard, new RoleGuard(CONSTANTS.ROLES.EMPLOYEE))
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
+  )
   @Get('employee')
   Employee(@Request() req: any) {
     return 'Employee Access Granted ' + JSON.stringify(req.user);
   }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Get()
-  // async test() {
-  //   return 'You have authorized !';
-  //   // To test endpoint on terminal
-  //   // curl http://localhost:3000/auth -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3ODQ1MjU2Mn0.CF-S4-vSBFBwHQSHZhD2jjewq4iJwUL_SUGzAoCwsNw"
-  // }
 }
-
 //Task to do (exception handling)
