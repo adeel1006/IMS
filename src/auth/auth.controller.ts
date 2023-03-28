@@ -5,19 +5,54 @@ import {
   UseGuards,
   Get,
   Request,
+  NotFoundException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { LoginDto } from './dto/login.dto';
 import { CONSTANTS } from 'src/users/constants';
 import { RoleGuard } from './guards/role.guard';
+import { UsersService } from '../users/users.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {}
   @Post('login')
   async login(@Body() authLoginDto: LoginDto) {
     return this.authService.login(authLoginDto);
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body) {
+    const { email } = body;
+
+    const user = await this.userService.forgotPassword(email);
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  @Post('reset-password')
+  async resetPassword(
+    @Body('email') email: string,
+    @Body('newPassword') newPassword: string,
+    @Body('otp') otp: string,
+  ) {
+    const updatedUser = await this.userService.resetPassword(
+      email,
+      newPassword,
+      otp,
+    );
+    return {
+      message: updatedUser.message,
+      UserId: updatedUser.userId,
+      email: updatedUser.email,
+    };
   }
 
   @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN]))
@@ -37,10 +72,7 @@ export class AuthController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([
-      CONSTANTS.ROLES.ADMIN,
-      CONSTANTS.ROLES.EMPLOYEE,
-    ]),
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
   @Get('employee')
   Employee(@Request() req: any) {

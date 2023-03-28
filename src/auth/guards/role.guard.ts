@@ -1,5 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { CONSTANTS } from 'src/users/constants';
+import { CanActivate, ExecutionContext } from '@nestjs/common';
 
 export class RoleGuard implements CanActivate {
   private rolePassed: string[];

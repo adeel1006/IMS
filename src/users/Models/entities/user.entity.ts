@@ -26,6 +26,9 @@ export class User extends BaseEntity {
   @Column()
   role: string;
 
+  @Column({ nullable: true })
+  otp: string;
+
   @Column()
   @CreateDateColumn()
   createdAt: Date;
