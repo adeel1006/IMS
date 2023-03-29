@@ -8,6 +8,7 @@ import { User } from './Models/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './Models/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { sendEmail } from '../Utils/sendEmail';
 
 @Injectable()
 export class UsersService {
@@ -47,6 +48,15 @@ export class UsersService {
     }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.usersRepository.update(user.id, { otp });
+    //send OTP TO EMAIL
+    const EmailArguments = {
+      send_to: email,
+      email_subject : 'Reset Password OTP',
+      email_body: `<p>Your one time password (OTP) is ${otp} </p>`
+    }
+
+    sendEmail(EmailArguments)
+
     console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
     return otp;
   }
