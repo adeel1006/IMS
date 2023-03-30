@@ -51,11 +51,11 @@ export class UsersService {
     //send OTP TO EMAIL
     const EmailArguments = {
       send_to: email,
-      email_subject : 'Reset Password OTP',
-      email_body: `<p>Your one time password (OTP) is ${otp} </p>`
-    }
+      email_subject: 'Reset Password OTP',
+      email_body: `<p>Your one time password (OTP) is ${otp} </p>`,
+    };
 
-    sendEmail(EmailArguments)
+    sendEmail(EmailArguments);
 
     console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
     return otp;
