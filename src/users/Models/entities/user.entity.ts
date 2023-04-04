@@ -3,19 +3,26 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
   AfterInsert,
   AfterUpdate,
   AfterRemove,
+  JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
-
+import { Organization } from 'src/organization/entities/organization.entity';
+import { Complaint } from 'src/complaints/entities/complaint.entity';
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({ nullable: true })
+  username: string;
 
   @Column({ unique: true })
   email: string;
@@ -29,6 +36,24 @@ export class User extends BaseEntity {
   @Column({ nullable: true })
   otp: string;
 
+  @Column({ nullable: true })
+  age: number;
+
+  @Column({ nullable: true })
+  contact: string;
+
+  @Column({ nullable: true })
+  designation: string;
+
+  @Column({ nullable: true })
+  department: string;
+
+  @Column({ nullable: true })
+  experience: string;
+
+  @Column({ nullable: true })
+  education: string;
+
   @Column()
   @CreateDateColumn()
   createdAt: Date;
@@ -38,7 +63,6 @@ export class User extends BaseEntity {
   updatedAt: Date;
 
   @BeforeInsert()
-  
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 8);
   }
@@ -46,7 +70,15 @@ export class User extends BaseEntity {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
+  //RELATIONS
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  @JoinColumn()
+  organzation: Organization;
 
+  @OneToMany(() => Complaint, (complaint) => complaint.description)
+  complaint: Complaint;
+
+  //LOGS
   @AfterInsert()
   logInsert() {
     console.log(`User inserted with id: ${this.id}`);

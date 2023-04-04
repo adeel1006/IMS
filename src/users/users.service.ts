@@ -48,13 +48,13 @@ export class UsersService {
     }
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await this.usersRepository.update(user.id, { otp });
-    //send OTP TO EMAIL
+    //Email Argument object
     const EmailArguments = {
       send_to: email,
       email_subject: 'Reset Password OTP',
       email_body: `<p>Your one time password (OTP) is ${otp} </p>`,
     };
-
+    //send OTP TO EMAIL
     sendEmail(EmailArguments);
 
     console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
