@@ -29,7 +29,7 @@ export class OrganizationService {
     }
 
     return {
-      message: `Organization with this #${id} deleted successfully`,
+      message: `Organization with this #${id}`,
       org: org,
     };
   }
