@@ -6,6 +6,8 @@ import {
   Get,
   Request,
   NotFoundException,
+  Catch,
+  HttpException
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -14,6 +16,7 @@ import { CONSTANTS } from 'src/users/constants';
 import { RoleGuard } from './guards/role.guard';
 import { UsersService } from '../users/users.service';
 
+@Catch(HttpException)
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -78,5 +81,7 @@ export class AuthController {
   Employee(@Request() req: any) {
     return 'Employee Access Granted ' + JSON.stringify(req.user);
   }
+  catch(error: HttpException) {
+    return { message: error.message };
+  }
 }
-//Task to do (exception handling)

@@ -18,7 +18,6 @@ export class OrganizationService {
   }
 
   async findAllOrganizations() {
-
     return await this.organizationRepository.find();
   }
 
@@ -54,9 +53,14 @@ export class OrganizationService {
     org.representativeName = updateOrganizationDto.representativeName;
     org.representativeContact = updateOrganizationDto.representativeContact;
 
+    const checkOrgId = await this.organizationRepository.findOneBy({ id });
+    if (!checkOrgId) {
+      throw new NotFoundException(`Organization with ID-${id} not found`);
+    }
+
     const updateProcess = await this.organizationRepository.update(id, org);
     return {
-      message: 'Updated Organization Successfully',
+      message: `Organization ${id} updated Successfully`,
       org: org,
     };
   }

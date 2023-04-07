@@ -5,6 +5,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { OrganizationModule } from './organization/organization.module';
 import { ComplaintsModule } from './complaints/complaints.module';
+import { VendorModule } from './vendor/vendor.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { ComplaintsModule } from './complaints/complaints.module';
     AuthModule,
     OrganizationModule,
     ComplaintsModule,
+    VendorModule,
   ],
   controllers: [],
   providers: [],

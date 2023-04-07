@@ -5,12 +5,16 @@ import {
   Get,
   Param,
   NotFoundException,
+  Catch,
+  HttpException,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './Models/dto/create-user.dto';
 import { User } from './Models/entities/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { Userdto } from './Models/dto/user.dto';
+
+@Catch(HttpException)
 @Controller('users')
 @Serialize(Userdto)
 export class UsersController {
@@ -29,5 +33,8 @@ export class UsersController {
       throw new NotFoundException('User not found...');
     }
     return user;
+  }
+  catch(error: HttpException) {
+    return { message: error.message };
   }
 }

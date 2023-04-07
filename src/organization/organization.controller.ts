@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Catch,
+  HttpException
 } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
 
+@Catch(HttpException)
 @Controller('organization')
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
@@ -44,5 +47,8 @@ export class OrganizationController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.organizationService.removeOrganization(+id);
+  }
+  catch ( error : HttpException){
+    return { message: error.message}
   }
 }

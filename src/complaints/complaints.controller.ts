@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Catch, HttpException} from '@nestjs/common';
 import { ComplaintsService } from './complaints.service';
 import { CreateComplaintDto } from './dto/create-complaint.dto';
 import { UpdateComplaintDto } from './dto/update-complaint.dto';
 
+@Catch(HttpException)
 @Controller('complaints')
 export class ComplaintsController {
   constructor(private readonly complaintsService: ComplaintsService) {}
@@ -30,5 +31,9 @@ export class ComplaintsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.complaintsService.removeComplaint(+id);
+  }
+
+  catch ( error : HttpException){
+    return { message: error.message}
   }
 }

@@ -12,12 +12,14 @@ export class ComplaintsService {
     private complaintRepository: Repository<Complaint>,
   ) {}
   async createComplain(createComplaintDto: CreateComplaintDto) {
-    const newComplaint = await this.complaintRepository.create(createComplaintDto);
+    const newComplaint = await this.complaintRepository.create(
+      createComplaintDto,
+    );
     const complaintObj = await this.complaintRepository.save(newComplaint);
     return {
-      message:"Complaint created successfully",
-      Complaint: complaintObj
-    }
+      message: 'Complaint created successfully',
+      Complaint: complaintObj,
+    };
   }
 
   async findAllComplaints() {
@@ -25,12 +27,12 @@ export class ComplaintsService {
   }
 
   async findOneComplaint(id: number) {
-    const complaint = await this.complaintRepository.findOneBy({id})
-    if(!complaint){
+    const complaint = await this.complaintRepository.findOneBy({ id });
+    if (!complaint) {
       throw new NotFoundException(`Complaint with ID-${id} not found`);
     }
     return {
-      complaint:complaint
+      complaint: complaint,
     };
   }
 
@@ -41,13 +43,16 @@ export class ComplaintsService {
     complaint.status = updateComplaintDto.status;
     complaint.action = updateComplaintDto.action;
 
-    const updateProcess = await this.complaintRepository.update(id,complaint);
-    if (!updateProcess) {
-      throw new NotFoundException(`Complaint with ID-${id} not found`);
+    const checkComplaintId = await this.complaintRepository.findOneBy({ id });
+    if (!checkComplaintId) {
+      throw new NotFoundException(`Organization with ID-${id} not found`);
     }
+
+    const updateProcess = await this.complaintRepository.update(id, complaint);
+
     return {
-      message: "Complaint updated successfully",
-      complaint: complaint
+      message: 'Complaint updated successfully',
+      complaint: complaint,
     };
   }
 
@@ -58,7 +63,7 @@ export class ComplaintsService {
     }
     await this.complaintRepository.delete(id);
     return {
-      complaint: complaint
+      complaint: complaint,
     };
   }
 }
