@@ -45,7 +45,7 @@ export class ComplaintsService {
 
     const checkComplaintId = await this.complaintRepository.findOneBy({ id });
     if (!checkComplaintId) {
-      throw new NotFoundException(`Organization with ID-${id} not found`);
+      throw new NotFoundException(`Complaint with ID-${id} not found`);
     }
 
     const updateProcess = await this.complaintRepository.update(id, complaint);

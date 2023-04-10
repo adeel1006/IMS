@@ -6,6 +6,8 @@ import { UsersModule } from './users/users.module';
 import { OrganizationModule } from './organization/organization.module';
 import { ComplaintsModule } from './complaints/complaints.module';
 import { VendorModule } from './vendor/vendor.module';
+import { CategoryModule } from './category/category.module';
+import { InventoryModule } from './inventory/inventory.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { VendorModule } from './vendor/vendor.module';
     OrganizationModule,
     ComplaintsModule,
     VendorModule,
+    CategoryModule,
+    InventoryModule,
   ],
   controllers: [],
   providers: [],

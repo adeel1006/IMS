@@ -14,7 +14,7 @@ export class OrganizationService {
   async createOrganization(createOrganizationDto: CreateOrganizationDto) {
     const org = await this.organizationRepository.create(createOrganizationDto);
     await this.organizationRepository.save(org);
-    return 'New Organization Added successfully';
+    return 'Organization Created successfully';
   }
 
   async findAllOrganizations() {

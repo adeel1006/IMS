@@ -15,7 +15,7 @@ export class VendorService {
     const vendor = await this.vendorRepository.create(createVendorDto);
     await this.vendorRepository.save(vendor);
     return {
-      message: "New Vendor created successfully",
+      message: "Vendor created successfully",
       vendor: vendor
     };
   }
@@ -62,7 +62,7 @@ export class VendorService {
     }
     await this.vendorRepository.delete(id);
     return {
-      message: `Organization with this #${id} deleted successfully`,
+      message: `Vendor with this #${id} deleted successfully`,
       vendor: vendor,
     };
   }
