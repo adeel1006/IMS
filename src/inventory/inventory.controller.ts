@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
+  Catch,
 } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 
+@Catch(HttpException)
 @Controller('inventory')
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
@@ -41,5 +44,8 @@ export class InventoryController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.inventoryService.removeItem(+id);
+  }
+  catch(error: HttpException) {
+    return { message: error.message };
   }
 }

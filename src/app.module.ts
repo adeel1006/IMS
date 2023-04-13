@@ -8,6 +8,7 @@ import { ComplaintsModule } from './complaints/complaints.module';
 import { VendorModule } from './vendor/vendor.module';
 import { CategoryModule } from './category/category.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { RequestsModule } from './requests/requests.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { InventoryModule } from './inventory/inventory.module';
     VendorModule,
     CategoryModule,
     InventoryModule,
+    RequestsModule,
   ],
   controllers: [],
   providers: [],
