@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './Models/dto/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { sendEmail } from '../Utils/sendEmail';
+import { UpdateUserDto } from './Models/dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -24,9 +25,18 @@ export class UsersService {
     return user;
   }
 
+  async findAllUsers(){ 
+    return this.usersRepository.find();
+  }
+
   async findUser(id: number) {
     const user = await this.usersRepository.findBy({ id: id });
     return user;
+  }
+
+  async updateUser(id: number, updateUserDto: UpdateUserDto){
+    const updateUser = new User();
+    
   }
 
   async findUserByEmail(email: string) {
@@ -79,6 +89,7 @@ export class UsersService {
       password: hashPassword,
       otp: null,
     });
+
 
     return {
       message: 'Password Reset Successful',
