@@ -4,6 +4,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -14,7 +17,7 @@ export class Category {
   @Column()
   categoryName: string;
 
-  @Column()
+  @Column({nullable: true})
   subCategoryName: string;
 
   @Column({nullable: true})
@@ -27,4 +30,11 @@ export class Category {
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  // @ManyToOne(()=> Category, (category)=>category.subCategoryName, {onDelete: 'CASCADE'})
+  // @JoinColumn()
+  // parent: Category;
+
+  // @OneToMany(()=>Category, (category)=> category.parent, {cascade: true})
+  // subCategoryName: Category[]
 }

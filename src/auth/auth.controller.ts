@@ -15,6 +15,7 @@ import { LoginDto } from './dto/login.dto';
 import { CONSTANTS } from 'src/users/constants';
 import { RoleGuard } from './guards/role.guard';
 import { UsersService } from '../users/users.service';
+import { CurrentUser } from 'src/Custom Decorators/user.decorator';
 
 @Catch(HttpException)
 @Controller('auth')
@@ -69,7 +70,8 @@ export class AuthController {
     new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.SUPER_ADMIN]),
   )
   @Get('admin')
-  Admin(@Request() req: any) {
+  Admin(@Request() req: any, @CurrentUser() user: any) {
+    console.log("Current USER====>"+ JSON.stringify(user));
     return 'Admin Access Granted ' + JSON.stringify(req.user);
   }
 
