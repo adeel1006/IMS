@@ -4,15 +4,32 @@ import { UpdateRequestDto } from './dto/update-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from './entities/request.entity';
 import { Repository } from 'typeorm';
+import { Subcategory } from 'src/category/entities/subcategory.entity';
 
 @Injectable()
 export class RequestsService {
   constructor(
     @InjectRepository(Request) private requestRepository: Repository<Request>,
+    @InjectRepository(Request)
+    private subCategoryRepository: Repository<Subcategory>,
   ) {}
   async createRequest(createRequestDto: CreateRequestDto) {
-    const request = await this.requestRepository.create(createRequestDto);
+    // Destructure the payload
+    const { itemName, requestType, subCategory, description } =
+      createRequestDto;
+    const sub_category = new Subcategory();
+    sub_category.name = createRequestDto.subCategory
+
+    // Create a new Request object and assign the values
+    const request = new Request();
+    request.itemName = itemName;
+    request.requestType = requestType;
+    request.subcategory = sub_category;
+    request.description = description;
+
+    // Save the request to the database
     await this.requestRepository.save(request);
+
     return {
       message: `New Request Created`,
       request: request,
@@ -35,24 +52,32 @@ export class RequestsService {
   }
 
   async updateRequest(id: number, updateRequestDto: UpdateRequestDto) {
-    const request = new Request();
-    request.requestType = updateRequestDto.requestType;
-    request.description = updateRequestDto.description;
+    const request = await this.requestRepository.findOneBy({ id });
 
-    const checkrequest = await this.requestRepository.findOneBy({ id });
-    if (!checkrequest) {
-      throw new NotFoundException(`request ${id} not found`);
+    const { itemName, requestType, subCategory, description } =
+      updateRequestDto;
+
+    // Find the subcategory by name
+    const subcategory = await this.subCategoryRepository.findOneBy({
+      name: subCategory,
+    });
+
+    if (!subcategory) {
+      throw new NotFoundException(`Subcategory "${subCategory}" not found`);
     }
 
-    const updatedInventory = await this.requestRepository.update(id, request);
-
+    request.itemName = itemName;
+    request.requestType = requestType;
+    request.description = description;
+    request.subcategory = subcategory;
+    await this.requestRepository.save(request);
     return {
-      message : `request ${id} updated successfully`,
-      request: request
-    }
+      message: `request ${id} updated successfully`,
+      request: request,
+    };
   }
 
-  async removeRequest(id: number) {
+  async removeRequest(id: number) { 
     const request = await this.requestRepository.findOneBy({ id });
     if (!request) {
       throw new NotFoundException(`request ${id} not found`);

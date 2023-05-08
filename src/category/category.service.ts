@@ -4,16 +4,28 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Category } from './entities/category.entity';
 import { Repository } from 'typeorm';
+import { Subcategory } from './entities/subcategory.entity';
 
 @Injectable()
 export class CategoryService {
   constructor(
     @InjectRepository(Category)
     private categoryRepository: Repository<Category>,
+    @InjectRepository(Subcategory)
+    private subcategoryRepository: Repository<Subcategory>,
   ) {}
   async createCategory(createCategoryDto: CreateCategoryDto) {
-    const category = await this.categoryRepository.create(createCategoryDto);
+    const category = this.categoryRepository.create(createCategoryDto);
     await this.categoryRepository.save(category);
+    
+    //for for the array of subCategories
+    for(const subCategoryName of createCategoryDto.subCategoryName){
+      const subcategory = new Subcategory();
+      subcategory.name = subCategoryName;
+      subcategory.category = category;
+      await this.subcategoryRepository.save(subcategory);
+    }
+
     return {
       message: 'New Category created successfully',
       category: category,
@@ -38,10 +50,9 @@ export class CategoryService {
   async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto) {
     const category = new Category();
     category.categoryName = updateCategoryDto.categoryName;
-    category.subCategoryName = updateCategoryDto.subCategoryName;
 
-    const checkCategoryId = await this.categoryRepository.findOneBy({id})
-    if(!checkCategoryId){
+    const checkCategoryId = await this.categoryRepository.findOneBy({ id });
+    if (!checkCategoryId) {
       throw new NotFoundException(`Category ${id} not found`);
     }
 
@@ -49,7 +60,7 @@ export class CategoryService {
     return {
       message: `Category ${id} Updated Successfully`,
       category: category,
-    }
+    };
   }
 
   async removeCategory(id: number) {

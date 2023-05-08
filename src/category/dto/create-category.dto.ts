@@ -6,5 +6,5 @@ export class CreateCategoryDto {
     categoryName: string;
 
     @IsString()
-    subCategoryName: string;
+    subCategoryName: [];
 }

@@ -1,3 +1,4 @@
+import { Request } from 'src/requests/entities/request.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,8 +7,8 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
-  JoinColumn,
 } from 'typeorm';
+import { Subcategory } from './subcategory.entity';
 
 @Entity()
 export class Category {
@@ -17,10 +18,7 @@ export class Category {
   @Column()
   categoryName: string;
 
-  @Column({nullable: true})
-  subCategoryName: string;
-
-  @Column({nullable: true})
+  @Column({ nullable: true })
   action: string;
 
   @Column()
@@ -31,10 +29,12 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToOne(()=> Category, (category)=>category.subCategoryName, {onDelete: 'CASCADE'})
-  // @JoinColumn()
-  // parent: Category;
+  // @ManyToOne(()=>Request, (request)=>request.category)
+  // requestType: Request;
 
-  // @OneToMany(()=>Category, (category)=> category.parent, {cascade: true})
-  // subCategoryName: Category[]
+  @OneToMany(() => Subcategory, (subcategory) => subcategory.category, {
+    cascade: true,
+    eager: true,
+  })
+  subcategories: Subcategory[];
 }

@@ -1,11 +1,22 @@
-import { IsNotEmpty, IsString } from "@nestjs/class-validator";
+import { IsNotEmpty, IsString } from '@nestjs/class-validator';
 
 export class CreateRequestDto {
-    @IsNotEmpty()
-    @IsString()
-    requestType: string;
+  @IsNotEmpty()
+  @IsString()
+  itemName: string;
 
-    @IsNotEmpty()
-    @IsString()
-    description: string;
+  @IsNotEmpty()
+  @IsString()
+  requestType: string;
+
+  @IsNotEmpty()
+  @IsString()
+  category: string;
+
+  @IsString()
+  subCategory: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description: string;
 }

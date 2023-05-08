@@ -1,9 +1,12 @@
+import { Subcategory } from 'src/category/entities/subcategory.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -30,4 +33,9 @@ export class Inventory {
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(()=> Subcategory, (subcategory)=>subcategory.items, {eager: true})
+  @JoinColumn({name:'subcategoryId'})
+  subcategory: Subcategory;
+
 }

@@ -15,5 +15,14 @@ export class CreateInventoryDto {
 
   @IsNotEmpty()
   @IsString()
+  category: string;
+
+  @IsNotEmpty()
+  @IsString()
+  subCategoryId: number;
+
+  @IsNotEmpty()
+  @IsString()
   price: number;
+
 }
