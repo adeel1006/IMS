@@ -1,9 +1,13 @@
+import { Subcategory } from 'src/category/entities/subcategory.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+  JoinColumn,
 } from 'typeorm';
 
 @Entity()
@@ -20,9 +24,6 @@ export class Vendor {
   @Column()
   category: string;
 
-  @Column({ nullable: true})
-  subCategory: string;
-
   @Column({nullable: true})
   totalSpendings: number;
 
@@ -36,4 +37,8 @@ export class Vendor {
   @Column()
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(()=>Subcategory, (subcategories)=>subcategories.vendors, {eager: true})
+  @JoinColumn()
+  subcategories: Subcategory[];
 }

@@ -14,10 +14,7 @@ export class CreateVendorDto {
     category: string;
 
     @IsString()
-    subCategory: string;
-
-    @IsString()
-    totalSpendings: number; 
+    subCategory: [];
 
     @IsString()
     action: string;

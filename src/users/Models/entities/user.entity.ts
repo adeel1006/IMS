@@ -16,6 +16,7 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { Organization } from 'src/organization/entities/organization.entity';
 import { Complaint } from 'src/complaints/entities/complaint.entity';
+import { Exclude } from 'class-transformer';
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -27,6 +28,7 @@ export class User extends BaseEntity {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
@@ -62,6 +64,18 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
+
+  //RELATIONS
+  @ManyToOne(() => Organization, (organization) => organization.users)
+  @JoinColumn()
+  organzation: Organization;
+
+  @OneToMany(() => Complaint, (complaint) => complaint.description, {cascade: true})
+  complaint: Complaint;
+
+
+
+  //Orm Decorators functions
   @BeforeInsert()
   async hashPassword() {
     this.password = await bcrypt.hash(this.password, 8);
@@ -70,13 +84,6 @@ export class User extends BaseEntity {
   async validatePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.password);
   }
-  //RELATIONS
-  @ManyToOne(() => Organization, (organization) => organization.users)
-  @JoinColumn()
-  organzation: Organization;
-
-  @OneToMany(() => Complaint, (complaint) => complaint.description)
-  complaint: Complaint;
 
   //LOGS
   @AfterInsert()

@@ -7,6 +7,10 @@ export class CreateComplaintDto {
 
     @IsNotEmpty()
     @IsString()
+    userId:number;
+
+    @IsNotEmpty()
+    @IsString()
     title: string;
   
     @IsNotEmpty()

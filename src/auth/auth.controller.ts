@@ -29,7 +29,7 @@ export class AuthController {
     return this.authService.login(authLoginDto);
   }
 
-  @Post('forgot-password')
+  @Post('forgotPassword')
   async forgotPassword(@Body() body) {
     const { email } = body;
 
@@ -41,7 +41,7 @@ export class AuthController {
     return user;
   }
 
-  @Post('reset-password')
+  @Post('resetPassword')
   async resetPassword(
     @Body('email') email: string,
     @Body('newPassword') newPassword: string,

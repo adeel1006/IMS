@@ -20,7 +20,7 @@ export class Complaint {
   @Column()
   description: string;
 
-  @Column({nullable:true})
+  @Column({ nullable: true })
   status: string;
 
   @Column({ nullable: true })
@@ -38,8 +38,7 @@ export class Complaint {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(()=>User, (user)=>user.username)
+  @ManyToOne(() => User, (user) => user.username)
   @JoinColumn()
-  user: User;
-
+  user: { id: number; username: string; email: string };
 }

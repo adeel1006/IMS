@@ -7,10 +7,13 @@ import {
   OneToMany,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from './category.entity';
 import { Request } from 'src/requests/entities/request.entity';
 import { Inventory } from 'src/inventory/entities/inventory.entity';
+import { Vendor } from 'src/vendor/entities/vendor.entity';
 
 @Entity()
 export class Subcategory {
@@ -28,13 +31,20 @@ export class Subcategory {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  //category relation
   @ManyToOne(() => Category, (category) => category.subcategories)
   @JoinColumn()
   category: Category;
 
+  //request relation
   @OneToMany(() => Request, request => request.subcategory)
   requests: Request[];
 
+  //items relation
   @OneToMany(()=>Inventory, (inventory)=>inventory.subcategory)
   items: Inventory[];
+
+  @ManyToMany(()=>Vendor, (vendor)=>vendor.subcategories)
+  @JoinTable()
+  vendors: Vendor[]
 }
