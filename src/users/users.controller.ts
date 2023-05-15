@@ -10,11 +10,11 @@ import {
   Patch,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './Models/dto/create-user.dto';
-import { User } from './Models/entities/user.entity';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
-import { Userdto } from './Models/dto/user.dto';
-import { UpdateUserDto } from './Models/dto/update-user.dto';
+import { Userdto } from './dto/user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Catch(HttpException)
 @Controller('users')

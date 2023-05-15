@@ -1,13 +1,6 @@
 import { IsString, IsNotEmpty } from "@nestjs/class-validator";
 
 export class CreateComplaintDto {
-    // @IsNotEmpty()
-    // @IsString()
-    // employeeName: string;
-
-    @IsNotEmpty()
-    @IsString()
-    userId:number;
 
     @IsNotEmpty()
     @IsString()
@@ -18,7 +11,7 @@ export class CreateComplaintDto {
     description: string;
   
     @IsString()
-    status: string;
+    status: boolean;
   
     @IsString()
     action: string;

@@ -15,7 +15,7 @@ import { LoginDto } from './dto/login.dto';
 import { CONSTANTS } from 'src/users/constants';
 import { RoleGuard } from './guards/role.guard';
 import { UsersService } from '../users/users.service';
-import { CurrentUser } from 'src/Custom Decorators/user.decorator';
+import { CurrentUser } from 'src/customDecorators/user.decorator';
 
 @Catch(HttpException)
 @Controller('auth')

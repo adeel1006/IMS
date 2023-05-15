@@ -6,8 +6,9 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  BeforeInsert,
 } from 'typeorm';
-import { User } from 'src/users/Models/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Entity()
 export class Complaint {
@@ -21,7 +22,7 @@ export class Complaint {
   description: string;
 
   @Column({ nullable: true })
-  status: string;
+  status: boolean;
 
   @Column({ nullable: true })
   action: string;
@@ -38,7 +39,13 @@ export class Complaint {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.username)
+  @BeforeInsert()
+  complaintStatus() {
+    //set the complaint status to false/pending before inserting to database
+    this.status = false;
+  }
+
+  @ManyToOne(() => User, (user) => user.username, {eager: true})
   @JoinColumn()
   user: { id: number; username: string; email: string };
 }

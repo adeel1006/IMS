@@ -4,7 +4,7 @@ import { UpdateComplaintDto } from './dto/update-complaint.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Complaint } from './entities/complaint.entity';
-import { User } from 'src/users/Models/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ComplaintsService {
@@ -14,16 +14,16 @@ export class ComplaintsService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async createComplain(createComplaintDto: CreateComplaintDto) {
-    const { userId, title, description } = createComplaintDto;
+  async createComplain(currentUser,createComplaintDto: CreateComplaintDto) {
+    const { title, description } = createComplaintDto;
     //Getting userInfo on the base of id
     const userObj = await this.userRepository.findOne({
       select: ['id', 'username', 'email'],
-      where: { id: userId },
+      where: { id: currentUser },
     });
 
-    if(!userObj){
-      throw new NotFoundException(`User ${userId} does not exist`);
+    if (!userObj) {
+      throw new NotFoundException(`User ${currentUser} does not exist`);
     }
 
     //destructing userInfo to avoid any sensitive information
@@ -44,6 +44,14 @@ export class ComplaintsService {
     return await this.complaintRepository.find();
   }
 
+  async getComplaintsStatus() {
+    const complaints = await this.complaintRepository.find();
+    return complaints.map(({ user, status, ...complaint }) => ({
+      status: status ? 'Resolved' : 'Pending',
+      ...complaint,
+    }));
+  }
+
   async findOneComplaint(id: number) {
     const complaint = await this.complaintRepository.findOneBy({ id });
     if (!complaint) {
@@ -55,12 +63,11 @@ export class ComplaintsService {
   }
 
   async updateComplaint(id: number, updateComplaintDto: UpdateComplaintDto) {
-
     const checkComplaintId = await this.complaintRepository.findOneBy({ id });
     if (!checkComplaintId) {
       throw new NotFoundException(`Complaint with ID-${id} not found`);
     }
-    
+
     const complaint = new Complaint();
     complaint.title = updateComplaintDto.title;
     complaint.description = updateComplaintDto.description;

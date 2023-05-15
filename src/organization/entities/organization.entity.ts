@@ -1,5 +1,5 @@
 import { IsEmail } from '@nestjs/class-validator';
-import { User } from 'src/users/Models/entities/user.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   Column,
