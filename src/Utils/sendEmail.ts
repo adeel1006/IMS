@@ -10,8 +10,6 @@ export async function sendEmail(args: EmailArguments): Promise<void> {
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      // user: 'adeelhassan1006@gmail.com',
-      // pass: 'ibuqnqwnpycfddbi',
       user: process.env.USER,
       pass: process.env.PASS,
     },
