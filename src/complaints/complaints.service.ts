@@ -5,8 +5,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Complaint } from './entities/complaint.entity';
 import { User } from 'src/users/Models/entities/user.entity';
-import { plainToClass } from 'class-transformer';
-import { CreateUserDto } from 'src/users/Models/dto/create-user.dto';
 
 @Injectable()
 export class ComplaintsService {
