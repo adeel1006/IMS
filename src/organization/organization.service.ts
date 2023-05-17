@@ -4,17 +4,53 @@ import { UpdateOrganizationDto } from './dto/update-organization.dto';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from './entities/organization.entity';
+import cloudinary from 'cloudinary';
+import { exit } from 'process';
+// import v2 = require("cloudinary")
 
 @Injectable()
 export class OrganizationService {
   constructor(
     @InjectRepository(Organization)
     private organizationRepository: Repository<Organization>,
-  ) {}
-  async createOrganization(createOrganizationDto: CreateOrganizationDto) {
-    const org = await this.organizationRepository.create(createOrganizationDto);
-    await this.organizationRepository.save(org);
-    return 'Organization Created successfully';
+  ) {
+    // configuration of cloudinary
+    cloudinary.v2.config({
+      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+      api_key: process.env.CLOUDINARY_API_KEY,
+      api_secret: process.env.CLOUDINARY_API_SECRET,
+    });
+  }
+  async createOrganization(
+    createOrganizationDto: CreateOrganizationDto,
+    logo: any,
+  ) {
+
+    const fs = require('fs');
+    const { extname } = require('path');
+    const fileExtName = extname(logo.originalname);
+    const fileName = `${new Date().getTime().toString()}${fileExtName}`;
+    const folderPath = './temp';
+
+    // Create the folder if it doesn't exist
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath);
+    }
+    const filePath = `${folderPath}/${fileName}`;
+    const fileStream = fs.createWriteStream(filePath);
+    fileStream.write(logo.buffer);
+    fileStream.end();
+
+    // Upload to cloudinary
+    const cloudinaryResponse = await cloudinary.v2.uploader.upload(filePath);
+    fs.unlinkSync(filePath);
+
+    const organization = this.organizationRepository.create({
+      ...createOrganizationDto,
+      logo: cloudinaryResponse.secure_url,
+    });
+
+    return await this.organizationRepository.save(organization);
   }
 
   async findAllOrganizations() {
@@ -42,7 +78,6 @@ export class OrganizationService {
       throw new NotFoundException(`Organization with ID-${id} not found`);
     }
 
-    org.logoUrl = updateOrganizationDto.logoUrl;
     org.name = updateOrganizationDto.name;
     org.email = updateOrganizationDto.email;
     org.bio = updateOrganizationDto.bio;
@@ -58,7 +93,7 @@ export class OrganizationService {
       throw new NotFoundException(`Organization with ID-${id} not found`);
     }
 
-    const updateProcess = await this.organizationRepository.update(id, org);
+    await this.organizationRepository.update(id, org);
     return {
       message: `Organization ${id} updated Successfully`,
       org: org,

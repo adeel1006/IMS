@@ -15,7 +15,7 @@ export class Organization {
   id: number;
 
   @Column()
-  logoUrl: string;
+  logo: string;
 
   @Column()
   name: string;

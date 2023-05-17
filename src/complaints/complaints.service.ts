@@ -19,7 +19,7 @@ export class ComplaintsService {
     //Getting userInfo on the base of id
     const userObj = await this.userRepository.findOne({
       select: ['id', 'username', 'email'],
-      where: { id: currentUser },
+      where: { id: currentUser.userId },
     });
 
     if (!userObj) {

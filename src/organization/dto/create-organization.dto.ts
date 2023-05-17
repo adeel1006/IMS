@@ -1,8 +1,8 @@
 import { IsEmail, IsNotEmpty, IsString } from '@nestjs/class-validator';
 
 export class CreateOrganizationDto {
-  @IsNotEmpty()
-  logoUrl: string;
+  @IsString()
+  logo: string;
 
   @IsNotEmpty()
   @IsString()

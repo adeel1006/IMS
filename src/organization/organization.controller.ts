@@ -7,8 +7,11 @@ import {
   Param,
   Delete,
   Catch,
-  HttpException
+  HttpException,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
@@ -19,8 +22,15 @@ export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
   @Post()
-  create(@Body() createOrganizationDto: CreateOrganizationDto) {
-    return this.organizationService.createOrganization(createOrganizationDto);
+  @UseInterceptors(FileInterceptor('logo'))
+  create(
+    @Body() createOrganizationDto: CreateOrganizationDto,
+    @UploadedFile() logo: Express.Multer.File,
+  ) {
+    return this.organizationService.createOrganization(
+      createOrganizationDto,
+      logo,
+    );
   }
 
   @Get()
@@ -48,7 +58,7 @@ export class OrganizationController {
   remove(@Param('id') id: string) {
     return this.organizationService.removeOrganization(+id);
   }
-  catch ( error : HttpException){
-    return { message: error.message}
+  catch(error: HttpException) {
+    return { message: error.message };
   }
 }
