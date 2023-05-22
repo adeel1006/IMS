@@ -5,8 +5,6 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Organization } from './entities/organization.entity';
 import cloudinary from 'cloudinary';
-import { exit } from 'process';
-// import v2 = require("cloudinary")
 
 @Injectable()
 export class OrganizationService {
@@ -25,7 +23,6 @@ export class OrganizationService {
     createOrganizationDto: CreateOrganizationDto,
     logo: any,
   ) {
-
     const fs = require('fs');
     const { extname } = require('path');
     const fileExtName = extname(logo.originalname);
@@ -110,5 +107,29 @@ export class OrganizationService {
       message: `Organization with this #${id} deleted successfully`,
       org: org,
     };
+  }
+
+  async getCurrentMonthOrganizationsCount() {
+    const currentDate = new Date();
+    const startOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      1,
+    );
+    const endOfMonth = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + 1,
+      0,
+    );
+
+    const count = await this.organizationRepository
+      .createQueryBuilder('organization')
+      .where('organization.createdAt BETWEEN :start AND :end', {
+        start: startOfMonth,
+        end: endOfMonth,
+      })
+      .getCount();
+
+    return count;
   }
 }

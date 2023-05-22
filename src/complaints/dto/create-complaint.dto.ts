@@ -11,7 +11,7 @@ export class CreateComplaintDto {
     description: string;
   
     @IsString()
-    status: boolean;
+    status: string;
   
     @IsString()
     action: string;

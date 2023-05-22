@@ -8,6 +8,8 @@ import {
   Catch,
   HttpException,
   Patch,
+  UseGuards,
+  Delete,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,25 +17,34 @@ import { User } from './entities/user.entity';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { Userdto } from './dto/user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { CurrentUser } from 'src/customDecorators/user.decorator';
+import { CONSTANTS } from './constants';
 
 @Catch(HttpException)
+@UseGuards(
+  JwtAuthGuard,
+  new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+)
 @Controller('users')
 @Serialize(Userdto)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+
   @Post('createUser')
-  createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
+  createUser(@CurrentUser() currentUser, @Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
 
   @Get()
-  async findAll() {
+  async findAll(@CurrentUser() currentUser) {
     return this.usersService.findAllUsers();
   }
 
   @Get('/:id')
-  async getUser(@Param('id') id: string) {
+  async getUser(@CurrentUser() currentUser, @Param('id') id: string) {
     const user = await this.usersService.findUser(parseInt(id));
     if (user.length <= 0) {
       throw new NotFoundException('User not found...');
@@ -41,10 +52,27 @@ export class UsersController {
     return user;
   }
   @Patch(':id')
-  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(@CurrentUser() currentUser, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(+id, updateUserDto);
   }
   catch(error: HttpException) {
     return { message: error.message };
+  }
+
+  @Delete(':id')
+  remove(@CurrentUser() currentUser, @Param('id') id: string) {
+    return this.usersService.removeUser(+id)
+  }
+
+  @Get('admin/count')
+  async getAdminCount(@CurrentUser() currentUser) {
+    const count = await this.usersService.getAdminCount();
+    return count; 
+  }
+
+  @Get('employees/count')
+  async countEmployees(@CurrentUser() currentUser) {
+    const count = await this.usersService.countEmployees();
+    return { count };
   }
 }

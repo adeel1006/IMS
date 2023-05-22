@@ -14,7 +14,7 @@ export class ComplaintsService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async createComplain(currentUser,createComplaintDto: CreateComplaintDto) {
+  async createComplain(currentUser, createComplaintDto: CreateComplaintDto) {
     const { title, description } = createComplaintDto;
     //Getting userInfo on the base of id
     const userObj = await this.userRepository.findOne({
@@ -91,5 +91,21 @@ export class ComplaintsService {
     return {
       complaint: complaint,
     };
+  }
+
+  async getPendingComplaintCount() {
+    const count = await this.complaintRepository.count({
+      where: { status: 'pending' },
+    });
+
+    return count;
+  }
+
+  async countResolvedComplaints(){
+    const count = await this.complaintRepository.count({
+      where: { status: 'resolved' },
+    });
+
+    return count;
   }
 }

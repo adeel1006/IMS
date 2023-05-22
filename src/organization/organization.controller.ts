@@ -10,14 +10,22 @@ import {
   HttpException,
   UseInterceptors,
   UploadedFile,
+  UseGuards,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OrganizationService } from './organization.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { UpdateOrganizationDto } from './dto/update-organization.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RoleGuard } from 'src/auth/guards/role.guard';
+import { CONSTANTS } from 'src/users/constants';
 
 @Catch(HttpException)
 @Controller('organization')
+@UseGuards(
+  JwtAuthGuard,
+  new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.SUPER_ADMIN]),
+)
 export class OrganizationController {
   constructor(private readonly organizationService: OrganizationService) {}
 
@@ -60,5 +68,13 @@ export class OrganizationController {
   }
   catch(error: HttpException) {
     return { message: error.message };
+  }
+
+  @Get('currentMonthOrg')
+  async getRecentOrganizations() {
+    const count =
+      await this.organizationService.getCurrentMonthOrganizationsCount();
+
+    return count;
   }
 }

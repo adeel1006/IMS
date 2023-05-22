@@ -22,7 +22,7 @@ export class Complaint {
   description: string;
 
   @Column({ nullable: true })
-  status: boolean;
+  status: string;
 
   @Column({ nullable: true })
   action: string;
@@ -41,8 +41,8 @@ export class Complaint {
 
   @BeforeInsert()
   complaintStatus() {
-    //set the complaint status to false/pending before inserting to database
-    this.status = false;
+    //set the complaint status to pending before inserting to database
+    this.status = "pending";
   }
 
   @ManyToOne(() => User, (user) => user.username, {eager: true})

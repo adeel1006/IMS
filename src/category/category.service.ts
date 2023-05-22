@@ -74,4 +74,9 @@ export class CategoryService {
       category: category,
     };
   }
+
+  async categoryCount() {
+    const count = this.categoryRepository.count();
+    return count;
+  }
 }

@@ -89,4 +89,10 @@ export class VendorService {
       vendor: vendor,
     };
   }
+
+  async vendorCount() {
+    const count = this.vendorRepository.count();
+
+    return count;
+  }
 }

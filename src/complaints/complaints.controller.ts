@@ -32,7 +32,6 @@ export class ComplaintsController {
     @CurrentUser() currentUser,
     @Body() createComplaintDto: CreateComplaintDto,
   ) {
-    console.log('current user: ' + currentUser);
     return this.complaintsService.createComplain(
       currentUser,
       createComplaintDto,
@@ -57,7 +56,7 @@ export class ComplaintsController {
     ]),
   )
   @Get('status')
-  findAllComplaintStatus() {
+  findAllComplaintStatus(@CurrentUser() currentUser) {
     return this.complaintsService.getComplaintsStatus();
   }
 
@@ -70,7 +69,7 @@ export class ComplaintsController {
     ]),
   )
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.complaintsService.findOneComplaint(+id);
   }
 
@@ -80,6 +79,7 @@ export class ComplaintsController {
   )
   @Patch(':id')
   update(
+    @CurrentUser() currentUser,
     @Param('id') id: string,
     @Body() updateComplaintDto: UpdateComplaintDto,
   ) {
@@ -91,8 +91,28 @@ export class ComplaintsController {
     new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.complaintsService.removeComplaint(+id);
+  }
+
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  @Get('pending')
+  async getPendingComplaintCount(@CurrentUser() currentUser) {
+    const count = await this.complaintsService.getPendingComplaintCount();
+    return { count };
+  }
+
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  @Get('resolved')
+  async countResolvedComplaints(@CurrentUser() currentUser) {
+    const count = await this.complaintsService.countResolvedComplaints();
+    return { count };
   }
 
   catch(error: HttpException) {

@@ -12,11 +12,14 @@ export class InventoryService {
     @InjectRepository(Inventory)
     private inventoryRepository: Repository<Inventory>,
     @InjectRepository(Subcategory)
-    private subcategoryRepository: Repository<Subcategory>
+    private subcategoryRepository: Repository<Subcategory>,
   ) {}
   async createItem(createInventoryDto: CreateInventoryDto) {
-    const {itemName, serialNumber, description, price, subCategoryId} = createInventoryDto;
-    const subcategory = await this.subcategoryRepository.findOneBy({id:subCategoryId});
+    const { itemName, serialNumber, description, price, subCategoryId } =
+      createInventoryDto;
+    const subcategory = await this.subcategoryRepository.findOneBy({
+      id: subCategoryId,
+    });
 
     if (!subcategory) {
       throw new NotFoundException('Subcategory not found');
@@ -52,8 +55,9 @@ export class InventoryService {
   }
 
   async updateItem(id: number, updateInventoryDto: UpdateInventoryDto) {
-    const subcategory = await this.subcategoryRepository.findOneBy({id:updateInventoryDto.subCategoryId});
-
+    const subcategory = await this.subcategoryRepository.findOneBy({
+      id: updateInventoryDto.subCategoryId,
+    });
 
     const item = new Inventory();
     item.itemName = updateInventoryDto.itemName;
@@ -70,9 +74,9 @@ export class InventoryService {
     await this.inventoryRepository.update(id, item);
 
     return {
-      message : `Item ${id} updated successfully`,
-      item: item
-    }
+      message: `Item ${id} updated successfully`,
+      item: item,
+    };
   }
 
   async removeItem(id: number) {
@@ -85,5 +89,11 @@ export class InventoryService {
       message: `item ${id} deleted successfully`,
       item: item,
     };
+  }
+
+  async inventoryItemsCount() {
+    const count = this.inventoryRepository.count();
+
+    return count;
   }
 }

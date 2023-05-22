@@ -25,7 +25,7 @@ export class UsersService {
     return user;
   }
 
-  async findAllUsers(){ 
+  async findAllUsers() {
     return this.usersRepository.find();
   }
 
@@ -34,9 +34,34 @@ export class UsersService {
     return user;
   }
 
-  async updateUser(id: number, updateUserDto: UpdateUserDto){
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
     const updateUser = new User();
-    
+    // Update the user properties
+    user.username = updateUserDto.username;
+    user.email = updateUserDto.email;
+    user.age = updateUserDto.age;
+    user.contact = updateUserDto.contact;
+    user.designation = updateUserDto.designation;
+    user.department = updateUserDto.department;
+    user.experience = updateUserDto.experience;
+    user.education = updateUserDto.education;
+
+    return this.usersRepository.save(user);
+  }
+
+  async removeUser(id: number) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (!user) {
+      throw new NotFoundException(`User with ID-${id} not found`);
+    }
+    await this.usersRepository.delete(id);
+    return {
+      user: user,
+    };
   }
 
   async findUserByEmail(email: string) {
@@ -90,11 +115,26 @@ export class UsersService {
       otp: null,
     });
 
-
     return {
       message: 'Password Reset Successful',
       userId: user.id,
       email: user.email,
     };
+  }
+
+  async getAdminCount(): Promise<number> {
+    const queryBuilder = this.usersRepository.createQueryBuilder('user');
+    const { count } = await queryBuilder
+      .select('COUNT(*)', 'count')
+      .where('user.role = :role', { role: 'admin' })
+      .getRawOne();
+
+    return count;
+  }
+  async countEmployees(): Promise<number> {
+    const count = await this.usersRepository.count({
+      where: { designation: 'employee' },
+    });
+    return count;
   }
 }
