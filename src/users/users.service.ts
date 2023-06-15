@@ -90,7 +90,7 @@ export class UsersService {
       email_body: `<p>Your one time password (OTP) is ${otp} </p>`,
     };
     //send OTP TO EMAIL
-    sendEmail(EmailArguments);
+    await sendEmail(EmailArguments);
 
     console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
     return otp;

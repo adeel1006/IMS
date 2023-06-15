@@ -1,4 +1,9 @@
 import * as nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const user = process.env.EMAIL;
+const password = process.env.PASSWORD;
 
 interface EmailArguments {
   send_to: string;
@@ -10,8 +15,8 @@ export async function sendEmail(args: EmailArguments): Promise<void> {
   let transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: process.env.USER,
-      pass: process.env.PASS,
+      user: user,
+      pass: password,
     },
   });
 
