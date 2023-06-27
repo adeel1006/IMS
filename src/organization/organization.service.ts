@@ -19,32 +19,15 @@ export class OrganizationService {
       api_secret: process.env.CLOUDINARY_API_SECRET,
     });
   }
-  async createOrganization(
-    createOrganizationDto: CreateOrganizationDto,
-    logo: any,
-  ) {
-    const fs = require('fs');
-    const { extname } = require('path');
-    const fileExtName = extname(logo.originalname);
-    const fileName = `${new Date().getTime().toString()}${fileExtName}`;
-    const folderPath = './temp';
+  async createOrganization(createOrganizationDto: CreateOrganizationDto) {
+    const cloudinaryResponse = await cloudinary.v2.uploader.upload(
+      createOrganizationDto.logo,
+    );
 
-    // Create the folder if it doesn't exist
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath);
-    }
-    const filePath = `${folderPath}/${fileName}`;
-    const fileStream = fs.createWriteStream(filePath);
-    fileStream.write(logo.buffer);
-    fileStream.end();
-
-    // Upload to cloudinary
-    const cloudinaryResponse = await cloudinary.v2.uploader.upload(filePath);
-    fs.unlinkSync(filePath);
-
+    const cloudinaryURL = cloudinaryResponse.secure_url;
     const organization = this.organizationRepository.create({
       ...createOrganizationDto,
-      logo: cloudinaryResponse.secure_url,
+      logo: cloudinaryURL,
     });
 
     return await this.organizationRepository.save(organization);
@@ -130,6 +113,49 @@ export class OrganizationService {
       })
       .getCount();
 
-    return count;
+    const title = 'Organizations';
+    const icon = count <= 10 ? false : true;
+    const tagline = `${count} new organizations added `;
+
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
+  }
+
+  async getOrgByMonth() {
+    const queryBuilder =
+      this.organizationRepository.createQueryBuilder('organization');
+    const orgByMonth = await queryBuilder
+      .select('EXTRACT(MONTH FROM organization.createdAt)', 'month')
+      .addSelect('COUNT(*)', 'number')
+      .groupBy('month')
+      .getRawMany();
+
+    const months = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    const result = months.map((month, index) => {
+      const orgCount = orgByMonth.find(
+        (org) => org.month === (index + 1).toString(),
+      );
+      return { month, number: orgCount ? orgCount.number : 0 };
+    });
+
+    return result;
   }
 }

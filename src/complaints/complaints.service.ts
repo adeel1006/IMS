@@ -97,8 +97,16 @@ export class ComplaintsService {
     const count = await this.complaintRepository.count({
       where: { status: 'pending' },
     });
+    const title = 'Complaints';
+    const icon = count <= 10 ? false : true;
+    const tagline = `${count} Pending complaints`;
 
-    return count;
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
   }
 
   async countResolvedComplaints(){
@@ -106,6 +114,15 @@ export class ComplaintsService {
       where: { status: 'resolved' },
     });
 
-    return count;
+    const title = 'Complaints';
+    const icon = count <= 10 ? false : true;
+    const tagline = `${count} Resolved complaints`;
+
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
   }
 }

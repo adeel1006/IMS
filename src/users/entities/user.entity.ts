@@ -23,6 +23,9 @@ export class User extends BaseEntity {
   id: number;
 
   @Column({ nullable: true })
+  image: string;
+
+  @Column({ nullable: true })
   username: string;
 
   @Column({ unique: true })
@@ -64,16 +67,20 @@ export class User extends BaseEntity {
   @UpdateDateColumn()
   updatedAt: Date;
 
-
   //RELATIONS
-  @ManyToOne(() => Organization, (organization) => organization.users)
-  @JoinColumn()
-  organzation: Organization;
+  // @ManyToOne(() => Organization, (organization) => organization.users)
+  // @JoinColumn()
+  // organzation: Organization;
 
-  @OneToMany(() => Complaint, (complaint) => complaint.description, {cascade: true})
+  @ManyToOne(() => Organization, (organization) => organization.users , {eager: true})
+@JoinColumn()
+organization: number;
+
+
+  @OneToMany(() => Complaint, (complaint) => complaint.description, {
+    cascade: true,
+  })
   complaint: Complaint;
-
-
 
   //Orm Decorators functions
   @BeforeInsert()

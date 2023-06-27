@@ -40,11 +40,12 @@ export class ComplaintsController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
   @Get()
   findAll() {
     return this.complaintsService.findAllComplaints();
+
   }
 
   @UseGuards(
@@ -58,6 +59,25 @@ export class ComplaintsController {
   @Get('status')
   findAllComplaintStatus(@CurrentUser() currentUser) {
     return this.complaintsService.getComplaintsStatus();
+  }
+
+
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  @Get('pending')
+  async getPendingComplaintCount(@CurrentUser() currentUser) {
+    return await this.complaintsService.getPendingComplaintCount();
+  }
+
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  @Get('resolved')
+  async countResolvedComplaints(@CurrentUser() currentUser) {
+    return await this.complaintsService.countResolvedComplaints();
   }
 
   @UseGuards(
@@ -75,7 +95,7 @@ export class ComplaintsController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
   @Patch(':id')
   update(
@@ -93,26 +113,6 @@ export class ComplaintsController {
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.complaintsService.removeComplaint(+id);
-  }
-
-  @UseGuards(
-    JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
-  )
-  @Get('pending')
-  async getPendingComplaintCount(@CurrentUser() currentUser) {
-    const count = await this.complaintsService.getPendingComplaintCount();
-    return { count };
-  }
-
-  @UseGuards(
-    JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
-  )
-  @Get('resolved')
-  async countResolvedComplaints(@CurrentUser() currentUser) {
-    const count = await this.complaintsService.countResolvedComplaints();
-    return { count };
   }
 
   catch(error: HttpException) {

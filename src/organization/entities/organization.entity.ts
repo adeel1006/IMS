@@ -14,7 +14,7 @@ export class Organization {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({nullable: true})
   logo: string;
 
   @Column()
@@ -53,6 +53,6 @@ export class Organization {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(()=>User, (users)=>users.organzation)
+  @OneToMany(()=>User, (users)=>users.organization)
   users:User[];
 }

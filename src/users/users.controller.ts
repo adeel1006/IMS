@@ -28,19 +28,41 @@ import { CONSTANTS } from './constants';
   new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
 )
 @Controller('users')
-@Serialize(Userdto)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-
   @Post('createUser')
-  createUser(@CurrentUser() currentUser, @Body() createUserDto: CreateUserDto): Promise<User> {
+  createUser(
+    @CurrentUser() currentUser,
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<User> {
     return this.usersService.createUser(createUserDto);
   }
 
+  @Get('adminsCount')
+  async getAdminCount(@CurrentUser() currentUser) {
+    return await this.usersService.getAdminCounts();
+  }
+
+  @Get('adminsByMonth')
+  async getAdminsByMonth() {
+    return await this.usersService.getAdminsByMonth();
+  }
+
+  @Get('/allAdmins')
+  async getAllAdminUsers() {
+    return this.usersService.getAllAdminUsers();
+  }
+
+  @Serialize(Userdto)
   @Get()
   async findAll(@CurrentUser() currentUser) {
     return this.usersService.findAllUsers();
+  }
+
+  @Get('employees/count')
+  async countEmployees(@CurrentUser() currentUser) {
+    return await this.usersService.countEmployeesNumbers();
   }
 
   @Get('/:id')
@@ -52,7 +74,11 @@ export class UsersController {
     return user;
   }
   @Patch(':id')
-  async updateUser(@CurrentUser() currentUser, @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  async updateUser(
+    @CurrentUser() currentUser,
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     return this.usersService.updateUser(+id, updateUserDto);
   }
   catch(error: HttpException) {
@@ -61,18 +87,6 @@ export class UsersController {
 
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
-    return this.usersService.removeUser(+id)
-  }
-
-  @Get('admin/count')
-  async getAdminCount(@CurrentUser() currentUser) {
-    const count = await this.usersService.getAdminCount();
-    return count; 
-  }
-
-  @Get('employees/count')
-  async countEmployees(@CurrentUser() currentUser) {
-    const count = await this.usersService.countEmployees();
-    return { count };
+    return this.usersService.removeUser(+id);
   }
 }

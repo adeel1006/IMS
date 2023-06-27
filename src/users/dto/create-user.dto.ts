@@ -1,24 +1,23 @@
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsNumber,
-  IsString,
-} from '@nestjs/class-validator';
+import { IsEmail, IsNumber, IsString } from '@nestjs/class-validator';
 import { Exclude } from 'class-transformer';
 export class CreateUserDto {
-  @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsString()
+  image: string;
 
   @IsString()
   username: string;
 
   @Exclude()
-  @IsNotEmpty()
   password: string;
 
-  @IsNotEmpty()
+  @IsString()
   role: string;
+
+  @IsString()
+  organization: string;
 
   @IsNumber()
   age: number;
