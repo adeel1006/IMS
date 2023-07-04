@@ -18,7 +18,7 @@ export class RequestsController {
     new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]),
   )
   create( @CurrentUser() currentUser, @Body() createRequestDto: CreateRequestDto) {
-    return this.requestsService.createRequest(createRequestDto);
+    return this.requestsService.createRequest(createRequestDto, currentUser);
   }
 
   @Get()

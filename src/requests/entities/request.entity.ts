@@ -1,4 +1,5 @@
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { User } from 'src/users/entities/user.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -39,12 +40,10 @@ export class Request {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @OneToMany(()=>Category, (category)=>category.requestType, {cascade: true})
-  // category: Category
 
-  // @OneToMany(()=>Subcategory, (subcategory)=>subcategory.name, {cascade:true, eager:true})
-  // @JoinColumn()
-  // subCategory: Subcategory
+  @ManyToOne(() => User, user => user.requests)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 
   @ManyToOne(() => Subcategory, subcategory => subcategory.requests)
   subcategory: Subcategory;

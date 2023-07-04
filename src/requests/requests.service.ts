@@ -3,6 +3,7 @@ import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Request } from './entities/request.entity';
+import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
 
@@ -10,15 +11,24 @@ import { Subcategory } from 'src/category/entities/subcategory.entity';
 export class RequestsService {
   constructor(
     @InjectRepository(Request) private requestRepository: Repository<Request>,
-    @InjectRepository(Request)
+    @InjectRepository(Subcategory)
     private subCategoryRepository: Repository<Subcategory>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
-  async createRequest(createRequestDto: CreateRequestDto) {
+  async createRequest(createRequestDto: CreateRequestDto, currentUser) {
+    const { userId } = currentUser;
+
     // Destructure the payload
-    const { itemName, requestType, subCategory, description } =
-      createRequestDto;
+    const { itemName, requestType, description, subCategory } = createRequestDto;
     const sub_category = new Subcategory();
-    sub_category.name = createRequestDto.subCategory
+    sub_category.name = subCategory;
+
+    //Checks User Id exists & Fetch User Object
+    const user = await this.userRepository.findOneBy({  id: userId  });
+    if (!user) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
 
     // Create a new Request object and assign the values
     const request = new Request();
@@ -26,6 +36,8 @@ export class RequestsService {
     request.requestType = requestType;
     request.subcategory = sub_category;
     request.description = description;
+    request.status = "pending";
+    request.user = user;
 
     // Save the request to the database
     await this.requestRepository.save(request);
@@ -77,7 +89,7 @@ export class RequestsService {
     };
   }
 
-  async removeRequest(id: number) { 
+  async removeRequest(id: number) {
     const request = await this.requestRepository.findOneBy({ id });
     if (!request) {
       throw new NotFoundException(`request ${id} not found`);

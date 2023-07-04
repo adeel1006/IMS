@@ -16,6 +16,7 @@ import {
 import * as bcrypt from 'bcryptjs';
 import { Organization } from 'src/organization/entities/organization.entity';
 import { Complaint } from 'src/complaints/entities/complaint.entity';
+import { Request } from 'src/requests/entities/request.entity';
 import { Exclude } from 'class-transformer';
 @Entity()
 export class User extends BaseEntity {
@@ -81,6 +82,10 @@ organization: number;
     cascade: true,
   })
   complaint: Complaint;
+
+
+  @OneToMany(() => Request, request => request.user)
+  requests: Request[];
 
   //Orm Decorators functions
   @BeforeInsert()
