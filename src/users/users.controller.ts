@@ -23,14 +23,14 @@ import { CurrentUser } from 'src/customDecorators/user.decorator';
 import { CONSTANTS } from './constants';
 
 @Catch(HttpException)
-@UseGuards(
-  JwtAuthGuard,
-  new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
-)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // @UseGuards(
+  //   JwtAuthGuard,
+  //   new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  // )
   @Post('createUser')
   createUser(
     @CurrentUser() currentUser,
@@ -39,11 +39,19 @@ export class UsersController {
     return this.usersService.createUser(createUserDto);
   }
 
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Get('adminsCount')
   async getAdminCount(@CurrentUser() currentUser) {
     return await this.usersService.getAdminCounts();
   }
 
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Get('adminsByMonth')
   async getAdminsByMonth() {
     return await this.usersService.getAdminsByMonth();
@@ -54,17 +62,29 @@ export class UsersController {
     return this.usersService.getAllAdminUsers();
   }
 
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Serialize(Userdto)
   @Get()
   async findAll(@CurrentUser() currentUser) {
     return this.usersService.findAllUsers();
   }
 
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Get('employees/count')
   async countEmployees(@CurrentUser() currentUser) {
     return await this.usersService.countEmployeesNumbers();
   }
 
+  // @UseGuards(
+  //   JwtAuthGuard,
+  //   new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  // )
   @Get('/:id')
   async getUser(@CurrentUser() currentUser, @Param('id') id: string) {
     const user = await this.usersService.findUser(parseInt(id));
@@ -74,8 +94,11 @@ export class UsersController {
     return user;
   }
 
-  
-  @Patch(':id')
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  @Patch('/:id')
   async updateUser(
     @CurrentUser() currentUser,
     @Param('id') id: string,
@@ -87,6 +110,10 @@ export class UsersController {
     return { message: error.message };
   }
 
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.usersService.removeUser(+id);

@@ -55,7 +55,10 @@ export class User extends BaseEntity {
   department: string;
 
   @Column({ nullable: true })
-  experience: string;
+  companyExperience: string;
+
+  @Column({ nullable: true })
+  totalExperience: string;
 
   @Column({ nullable: true })
   education: string;

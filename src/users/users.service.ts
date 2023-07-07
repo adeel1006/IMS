@@ -73,7 +73,7 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
-    const updateUser = new User();
+
     // Update the user properties
     user.username = updateUserDto.username;
     user.email = updateUserDto.email;
@@ -81,9 +81,18 @@ export class UsersService {
     user.contact = updateUserDto.contact;
     user.designation = updateUserDto.designation;
     user.department = updateUserDto.department;
-    user.experience = updateUserDto.experience;
+    user.companyExperience = updateUserDto.companyExperience;
+    user.totalExperience = updateUserDto.totalExperience;
     user.education = updateUserDto.education;
 
+    // Upload the new image to Cloudinary
+    if (updateUserDto.image) {
+      const cloudinaryResponse = await cloudinary.v2.uploader.upload(
+        updateUserDto.image,
+      );
+      const cloudinaryURL = cloudinaryResponse.secure_url;
+      user.image = cloudinaryURL;
+    }
     return this.usersRepository.save(user);
   }
 

@@ -32,7 +32,10 @@ export class CreateUserDto {
   department: string;
 
   @IsString()
-  experience: string;
+  companyExperience: string;
+
+  @IsString()
+  totalExperience: string;
 
   @IsString()
   education: string;
