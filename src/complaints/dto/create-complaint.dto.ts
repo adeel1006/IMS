@@ -9,6 +9,9 @@ export class CreateComplaintDto {
     @IsNotEmpty()
     @IsString()
     description: string;
+
+    @IsString()
+    suggestion: string;
   
     @IsString()
     status: string;

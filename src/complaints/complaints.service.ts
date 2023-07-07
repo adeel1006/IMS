@@ -15,10 +15,10 @@ export class ComplaintsService {
     private userRepository: Repository<User>,
   ) {}
   async createComplain(currentUser, createComplaintDto: CreateComplaintDto) {
-    const { title, description } = createComplaintDto;
+    const { title, description, suggestion } = createComplaintDto;
     //Getting userInfo on the base of id
     const userObj = await this.userRepository.findOne({
-      select: ['id', 'username', 'email'],
+      select: ['id', 'username', 'email', 'role'],
       where: { id: currentUser.userId },
     });
 
@@ -27,12 +27,14 @@ export class ComplaintsService {
     }
 
     //destructing userInfo to avoid any sensitive information
-    const { id, username, email } = userObj;
+    const { id, username, email, role } = userObj;
 
     const complaint = new Complaint();
     complaint.title = title;
     complaint.description = description;
-    complaint.user = { id, username, email };
+    complaint.suggestion = suggestion;
+    complaint.status = 'pending';
+    complaint.user = { id, username, email, role };
     await this.complaintRepository.save(complaint);
 
     return {
@@ -50,6 +52,24 @@ export class ComplaintsService {
       status: status ? 'Resolved' : 'Pending',
       ...complaint,
     }));
+  }
+
+  async findUserComplaints(currentUser) {
+    const { userId } = currentUser;
+
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
+
+    const complaints = await this.complaintRepository.find({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
+    return {
+      message: `Requests for user ${userId}`,
+      complaints: complaints,
+    };
   }
 
   async findOneComplaint(id: number) {
@@ -109,7 +129,7 @@ export class ComplaintsService {
     };
   }
 
-  async countResolvedComplaints(){
+  async countResolvedComplaints() {
     const count = await this.complaintRepository.count({
       where: { status: 'resolved' },
     });

@@ -6,26 +6,44 @@ import { Request } from './entities/request.entity';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class RequestsService {
   constructor(
     @InjectRepository(Request) private requestRepository: Repository<Request>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
     @InjectRepository(Subcategory)
     private subCategoryRepository: Repository<Subcategory>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
   async createRequest(createRequestDto: CreateRequestDto, currentUser) {
+    // Destructure the payload
+    const { itemName, requestType, description, subCategory, category } =
+      createRequestDto;
     const { userId } = currentUser;
 
-    // Destructure the payload
-    const { itemName, requestType, description, subCategory } = createRequestDto;
-    const sub_category = new Subcategory();
-    sub_category.name = subCategory;
+    //Check & Fetch Subcategory
+    const checkCategory = await this.categoryRepository.findOneBy({
+      id: +category,
+    });
+    if (!checkCategory) {
+      throw new NotFoundException(`User ${checkCategory} not found`);
+    }
+
+
+    //Check & Fetch Subcategory
+    const sub_category = await this.subCategoryRepository.findOneBy({
+      id: +subCategory,
+    });
+    if (!sub_category) {
+      throw new NotFoundException(`User ${sub_category} not found`);
+    }
 
     //Checks User Id exists & Fetch User Object
-    const user = await this.userRepository.findOneBy({  id: userId  });
+    const user = await this.userRepository.findOneBy({ id: userId });
     if (!user) {
       throw new NotFoundException(`User ${userId} not found`);
     }
@@ -36,7 +54,9 @@ export class RequestsService {
     request.requestType = requestType;
     request.subcategory = sub_category;
     request.description = description;
-    request.status = "pending";
+    request.category = checkCategory.categoryName;
+    request.subcategory = sub_category;
+    request.status = 'pending';
     request.user = user;
 
     // Save the request to the database
@@ -50,6 +70,28 @@ export class RequestsService {
 
   async findAllRequests() {
     return await this.requestRepository.find();
+  }
+
+  async findUserRequests(currentUser) {
+    const { userId } = currentUser;
+
+    // Find the user by ID
+    const user = await this.userRepository.findOneBy({ id: userId });
+
+    if (!user) {
+      throw new NotFoundException(`User ${userId} not found`);
+    }
+
+    // Find all requests associated with the user
+    const requests = await this.requestRepository.find({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      message: `Requests for user ${userId}`,
+      requests: requests,
+    };
   }
 
   async findOneRequest(id: number) {

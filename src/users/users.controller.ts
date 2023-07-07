@@ -73,6 +73,8 @@ export class UsersController {
     }
     return user;
   }
+
+  
   @Patch(':id')
   async updateUser(
     @CurrentUser() currentUser,

@@ -48,6 +48,15 @@ export class ComplaintsController {
 
   }
 
+  @Get("/userComplaints")
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  findUserRequests(@CurrentUser() currentUser){
+    return this.complaintsService.findUserComplaints(currentUser);
+  }
+
   @UseGuards(
     JwtAuthGuard,
     new RoleGuard([

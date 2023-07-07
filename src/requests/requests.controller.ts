@@ -30,6 +30,15 @@ export class RequestsController {
     return this.requestsService.findAllRequests();
   }
 
+  @Get("/userRequests")
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  findUserRequests(@CurrentUser() currentUser){
+    return this.requestsService.findUserRequests(currentUser);
+  }
+
   @UseGuards(
     JwtAuthGuard,
     new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),

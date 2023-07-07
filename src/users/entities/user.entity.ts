@@ -69,22 +69,19 @@ export class User extends BaseEntity {
   updatedAt: Date;
 
   //RELATIONS
-  // @ManyToOne(() => Organization, (organization) => organization.users)
-  // @JoinColumn()
-  // organzation: Organization;
 
-  @ManyToOne(() => Organization, (organization) => organization.users , {eager: true})
-@JoinColumn()
-organization: number;
-
+  @ManyToOne(() => Organization, (organization) => organization.users, {
+    eager: true,
+  })
+  @JoinColumn()
+  organization: number;
 
   @OneToMany(() => Complaint, (complaint) => complaint.description, {
     cascade: true,
   })
   complaint: Complaint;
 
-
-  @OneToMany(() => Request, request => request.user)
+  @OneToMany(() => Request, (request) => request.user)
   requests: Request[];
 
   //Orm Decorators functions

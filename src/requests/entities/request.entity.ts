@@ -27,6 +27,9 @@ export class Request {
   description: string;
 
   @Column({ nullable: true })
+  category: string;
+
+  @Column({ nullable: true })
   action: string;
 
   @Column({ nullable: true })
@@ -45,6 +48,6 @@ export class Request {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Subcategory, subcategory => subcategory.requests)
+  @ManyToOne(() => Subcategory, subcategory => subcategory.requests, { cascade: true, eager: true })
   subcategory: Subcategory;
 }

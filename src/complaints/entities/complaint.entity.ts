@@ -22,6 +22,9 @@ export class Complaint {
   description: string;
 
   @Column({ nullable: true })
+  suggestion: string;
+
+  @Column({ nullable: true })
   status: string;
 
   @Column({ nullable: true })
@@ -39,13 +42,7 @@ export class Complaint {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @BeforeInsert()
-  complaintStatus() {
-    //set the complaint status to pending before inserting to database
-    this.status = "pending";
-  }
-
-  @ManyToOne(() => User, (user) => user.username, {eager: true})
+  @ManyToOne(() => User, (user) => user.username, { eager: true })
   @JoinColumn()
-  user: { id: number; username: string; email: string };
+  user: { id: number; username: string; email: string; role: string };
 }
