@@ -28,13 +28,19 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    const organizationId = parseInt(createUserDto.organization, 10);
+    let organizationId;
+    if (createUserDto.organization) {
+      organizationId = parseInt(createUserDto.organization, 10);
+    }
 
-    const cloudinaryResponse = await cloudinary.v2.uploader.upload(
-      createUserDto.image,
-    );
-    const cloudinaryURL = cloudinaryResponse.secure_url;
+    let cloudinaryURL;
+    if (createUserDto.image) {
+      const cloudinaryResponse = await cloudinary.v2.uploader.upload(
+        createUserDto.image,
+      );
+      cloudinaryURL = cloudinaryResponse.secure_url;
+    }
+
     const user = await this.usersRepository.create({
       ...createUserDto,
       image: cloudinaryURL,
@@ -135,7 +141,7 @@ export class UsersService {
     //send OTP TO EMAIL
     await sendEmail(EmailArguments);
 
-    console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
+    // console.log(`OTP sent to this email "${user.email}" : OTP-${otp}`);
     return otp;
   }
 

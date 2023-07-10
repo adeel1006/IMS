@@ -17,9 +17,9 @@ export class CategoryService {
   async createCategory(createCategoryDto: CreateCategoryDto) {
     const category = this.categoryRepository.create(createCategoryDto);
     await this.categoryRepository.save(category);
-    
+
     //for for the array of subCategories
-    for(const subCategoryName of createCategoryDto.subCategoryName){
+    for (const subCategoryName of createCategoryDto.subCategoryName) {
       const subcategory = new Subcategory();
       subcategory.name = subCategoryName;
       subcategory.category = category;
@@ -76,7 +76,16 @@ export class CategoryService {
   }
 
   async categoryCount() {
-    const count = this.categoryRepository.count();
-    return count;
+    const count = await this.categoryRepository.count();
+    const title = 'Categories';
+    const icon = count <= 8 ? false : true;
+    const tagline = `${count} new categories added`;
+
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
   }
 }

@@ -41,6 +41,13 @@ export class CategoryController {
     return this.categoryService.findAllCategory();
   }
 
+  @Get('categoriesCount')
+  @Get()
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  async categoriesCount(@CurrentUser() currentUser) {
+    return await this.categoryService.categoryCount();
+  }
+
   @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
   @Get(':id')
   findOne(@CurrentUser() currentUser, @Param('id') id: string) {
@@ -64,12 +71,6 @@ export class CategoryController {
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.categoryService.removeCategory(+id);
-  }
-
-  @Get('categoriesCount')
-  async categoriesCount(@CurrentUser() currentUser) {
-    const count = await this.categoryService.categoryCount();
-    return { count };
   }
   catch(error: HttpException) {
     return { message: error.message };

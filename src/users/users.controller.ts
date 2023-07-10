@@ -27,10 +27,10 @@ import { CONSTANTS } from './constants';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // @UseGuards(
-  //   JwtAuthGuard,
-  //   new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
-  // )
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
+  )
   @Post('createUser')
   createUser(
     @CurrentUser() currentUser,
@@ -81,10 +81,10 @@ export class UsersController {
     return await this.usersService.countEmployeesNumbers();
   }
 
-  // @UseGuards(
-  //   JwtAuthGuard,
-  //   new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
-  // )
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
   @Get('/:id')
   async getUser(@CurrentUser() currentUser, @Param('id') id: string) {
     const user = await this.usersService.findUser(parseInt(id));

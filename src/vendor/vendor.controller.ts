@@ -37,25 +37,28 @@ export class VendorController {
     return this.vendorService.findAllVendor();
   }
 
+  @Get('vendorsCount')
+  async vendorsCount(@CurrentUser() currentUser) {
+    return await this.vendorService.vendorCount();
+  }
+
   @Get(':id')
   findOne(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.vendorService.findOneVendor(+id);
   }
 
   @Patch(':id')
-  update(@CurrentUser() currentUser, @Param('id') id: string, @Body() updateVendorDto: UpdateVendorDto) {
+  update(
+    @CurrentUser() currentUser,
+    @Param('id') id: string,
+    @Body() updateVendorDto: UpdateVendorDto,
+  ) {
     return this.vendorService.updateVendor(+id, updateVendorDto);
   }
 
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.vendorService.removeVendor(+id);
-  }
-
-  @Get('vendorsCount')
-  async vendorsCount(@CurrentUser() currentUser) {
-    const count = await this.vendorService.vendorCount();
-    return { count };
   }
   catch(error: HttpException) {
     return { message: error.message };

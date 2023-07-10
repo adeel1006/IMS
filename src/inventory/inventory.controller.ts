@@ -37,6 +37,11 @@ export class InventoryController {
     return this.inventoryService.findAllItems();
   }
 
+  @Get('inventoryItems')
+  async countResolvedComplaints(@CurrentUser() currentUser) {
+    return await this.inventoryService.inventoryItemsCount();
+  }
+
   @Get(':id')
   findOne(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.inventoryService.findOneItem(+id);
@@ -54,12 +59,6 @@ export class InventoryController {
   @Delete(':id')
   remove(@CurrentUser() currentUser, @Param('id') id: string) {
     return this.inventoryService.removeItem(+id);
-  }
-
-  @Get('inventoryItems')
-  async countResolvedComplaints(@CurrentUser() currentUser) {
-    const count = await this.inventoryService.inventoryItemsCount();
-    return { count };
   }
   catch(error: HttpException) {
     return { message: error.message };

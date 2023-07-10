@@ -91,8 +91,16 @@ export class VendorService {
   }
 
   async vendorCount() {
-    const count = this.vendorRepository.count();
+    const count = await this.vendorRepository.count();
+    const title = 'Vendors';
+    const icon = count <= 5 ? false : true;
+    const tagline = `${count} new vendors added`;
 
-    return count;
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
   }
 }

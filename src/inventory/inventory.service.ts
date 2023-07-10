@@ -92,8 +92,16 @@ export class InventoryService {
   }
 
   async inventoryItemsCount() {
-    const count = this.inventoryRepository.count();
+    const count = await this.inventoryRepository.count();
+    const title = 'Inventory Items';
+    const icon = count <= 5 ? false : true;
+    const tagline = `${count} new items added`;
 
-    return count;
+    return {
+      number: count,
+      icon: icon,
+      title: title,
+      tagline: tagline,
+    };
   }
 }
