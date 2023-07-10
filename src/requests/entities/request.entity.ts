@@ -43,11 +43,16 @@ export class Request {
   @UpdateDateColumn()
   updatedAt: Date;
 
-
-  @ManyToOne(() => User, user => user.requests)
+  @ManyToOne(() => User, (user) => user.requests, {
+    cascade: true,
+    eager: true,
+  })
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @ManyToOne(() => Subcategory, subcategory => subcategory.requests, { cascade: true, eager: true })
+  @ManyToOne(() => Subcategory, (subcategory) => subcategory.requests, {
+    cascade: true,
+    eager: true,
+  })
   subcategory: Subcategory;
 }

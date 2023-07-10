@@ -1,4 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, HttpException, Catch, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  Catch,
+  UseGuards,
+} from '@nestjs/common';
 import { RequestsService } from './requests.service';
 import { CreateRequestDto } from './dto/create-request.dto';
 import { UpdateRequestDto } from './dto/update-request.dto';
@@ -10,33 +21,36 @@ import { CurrentUser } from 'src/customDecorators/user.decorator';
 @Catch(HttpException)
 @Controller('requests')
 export class RequestsController {
-  constructor(private readonly requestsService: RequestsService) {} 
+  constructor(private readonly requestsService: RequestsService) {}
 
   @Post()
-  @UseGuards(
-    JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]),
-  )
-  create( @CurrentUser() currentUser, @Body() createRequestDto: CreateRequestDto) {
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]))
+  create(
+    @CurrentUser() currentUser,
+    @Body() createRequestDto: CreateRequestDto,
+  ) {
     return this.requestsService.createRequest(createRequestDto, currentUser);
   }
 
   @Get()
-  @UseGuards(
-    JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN]),
-  )
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
   findAll(@CurrentUser() currentUser) {
     return this.requestsService.findAllRequests();
   }
 
-  @Get("/userRequests")
+  @Get('/userRequests')
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
-  findUserRequests(@CurrentUser() currentUser){
+  findUserRequests(@CurrentUser() currentUser) {
     return this.requestsService.findUserRequests(currentUser);
+  }
+
+  @Get('/employeesRequests')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  findEmpRequests(@CurrentUser() currentUser) {
+    return this.requestsService.getEmployeesRequests();
   }
 
   @UseGuards(
@@ -48,12 +62,13 @@ export class RequestsController {
     return this.requestsService.findOneRequest(+id);
   }
 
-  @UseGuards(
-    JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]),
-  )
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]))
   @Patch(':id')
-  update(@CurrentUser() currentUser, @Param('id') id: string, @Body() updateRequestDto: UpdateRequestDto) {
+  update(
+    @CurrentUser() currentUser,
+    @Param('id') id: string,
+    @Body() updateRequestDto: UpdateRequestDto,
+  ) {
     return this.requestsService.updateRequest(+id, updateRequestDto);
   }
 

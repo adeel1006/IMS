@@ -33,7 +33,6 @@ export class RequestsService {
       throw new NotFoundException(`User ${checkCategory} not found`);
     }
 
-
     //Check & Fetch Subcategory
     const sub_category = await this.subCategoryRepository.findOneBy({
       id: +subCategory,
@@ -92,6 +91,14 @@ export class RequestsService {
       message: `Requests for user ${userId}`,
       requests: requests,
     };
+  }
+
+  async getEmployeesRequests() {
+    const empRequests = await this.requestRepository.find({
+      where: { user: { role: 'EMPLOYEE' } },
+      order: { createdAt: 'DESC' },
+    });
+    return empRequests;
   }
 
   async findOneRequest(id: number) {
