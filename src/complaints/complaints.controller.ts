@@ -40,21 +40,30 @@ export class ComplaintsController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Get()
   findAll() {
     return this.complaintsService.findAllComplaints();
-
   }
 
-  @Get("/userComplaints")
+  @Get('/userComplaints')
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
   )
-  findUserRequests(@CurrentUser() currentUser){
+  findUserRequests(@CurrentUser() currentUser) {
     return this.complaintsService.findUserComplaints(currentUser);
+  }
+
+  @Get('/employeesComplaints')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  findEmpComplaints(@CurrentUser() currentUser) {
+    return this.complaintsService.findEmployeesComplaints();
   }
 
   @UseGuards(
@@ -70,10 +79,13 @@ export class ComplaintsController {
     return this.complaintsService.getComplaintsStatus();
   }
 
-
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Get('pending')
   async getPendingComplaintCount(@CurrentUser() currentUser) {
@@ -82,7 +94,11 @@ export class ComplaintsController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Get('resolved')
   async countResolvedComplaints(@CurrentUser() currentUser) {
@@ -104,7 +120,11 @@ export class ComplaintsController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN,CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Patch(':id')
   update(

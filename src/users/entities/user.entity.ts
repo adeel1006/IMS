@@ -77,7 +77,7 @@ export class User extends BaseEntity {
     eager: true,
   })
   @JoinColumn()
-  organization: number;
+  organization: Organization;
 
   @OneToMany(() => Complaint, (complaint) => complaint.description, {
     cascade: true,

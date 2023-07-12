@@ -62,7 +62,7 @@ export class RequestsController {
     return this.requestsService.findOneRequest(+id);
   }
 
-  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.EMPLOYEE]))
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]))
   @Patch(':id')
   update(
     @CurrentUser() currentUser,

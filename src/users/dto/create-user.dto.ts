@@ -39,4 +39,5 @@ export class CreateUserDto {
 
   @IsString()
   education: string;
+
 }

@@ -27,10 +27,21 @@ export class UsersService {
     });
   }
 
-  async createUser(createUserDto: CreateUserDto) {
-    let organizationId;
+  async createUser(createUserDto: CreateUserDto, currentUser) {
+    const { userId } = currentUser;
+    let organization;
+
     if (createUserDto.organization) {
-      organizationId = parseInt(createUserDto.organization, 10);
+      const organizationId = parseInt(createUserDto.organization, 10);
+      organization = await this.organizationsRepository.findBy({
+        id: organizationId,
+      });
+    } else {
+      //extracts the organization on the base of admin id to link user to an organization employee
+      const currentUserOrganization = await this.usersRepository.findBy({
+        id: userId,
+      });
+      organization = currentUserOrganization[0]?.organization;
     }
 
     let cloudinaryURL;
@@ -44,7 +55,7 @@ export class UsersService {
     const user = await this.usersRepository.create({
       ...createUserDto,
       image: cloudinaryURL,
-      organization: organizationId,
+      organization: organization,
     });
 
     await user.save();
@@ -59,10 +70,15 @@ export class UsersService {
 
     delete user.password;
     return user;
+    return true;
   }
 
   async getAllAdminUsers() {
     return this.usersRepository.find({ where: { role: 'ADMIN' } });
+  }
+
+  async getAllEmployees() {
+    return this.usersRepository.find({ where: { role: 'EMPLOYEE' } });
   }
 
   async findAllUsers() {

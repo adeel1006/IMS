@@ -115,7 +115,7 @@ export class RequestsService {
   async updateRequest(id: number, updateRequestDto: UpdateRequestDto) {
     const request = await this.requestRepository.findOneBy({ id });
 
-    const { itemName, requestType, subCategory, description } =
+    const { itemName, requestType, subCategory, description, status } =
       updateRequestDto;
 
     // Find the subcategory by name
@@ -131,6 +131,7 @@ export class RequestsService {
     request.requestType = requestType;
     request.description = description;
     request.subcategory = subcategory;
+    request.status  = status;
     await this.requestRepository.save(request);
     return {
       message: `request ${id} updated successfully`,

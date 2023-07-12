@@ -72,6 +72,15 @@ export class ComplaintsService {
     };
   }
 
+  async findEmployeesComplaints() {
+    const empComplaints = await this.complaintRepository.find({
+      where: { user: { role: 'EMPLOYEE' } },
+      order: { createdAt: 'DESC' },
+    });
+
+    return empComplaints;
+  }
+
   async findOneComplaint(id: number) {
     const complaint = await this.complaintRepository.findOneBy({ id });
     if (!complaint) {

@@ -35,8 +35,8 @@ export class UsersController {
   createUser(
     @CurrentUser() currentUser,
     @Body() createUserDto: CreateUserDto,
-  ): Promise<User> {
-    return this.usersService.createUser(createUserDto);
+  ) {
+    return this.usersService.createUser(createUserDto, currentUser);
   }
 
   @UseGuards(
