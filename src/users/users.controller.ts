@@ -32,10 +32,7 @@ export class UsersController {
     new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN]),
   )
   @Post('createUser')
-  createUser(
-    @CurrentUser() currentUser,
-    @Body() createUserDto: CreateUserDto,
-  ) {
+  createUser(@CurrentUser() currentUser, @Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto, currentUser);
   }
 
@@ -57,9 +54,16 @@ export class UsersController {
     return await this.usersService.getAdminsByMonth();
   }
 
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN]))
   @Get('/allAdmins')
   async getAllAdminUsers() {
     return this.usersService.getAllAdminUsers();
+  }
+
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  @Get('/allEmployees')
+  async getAllEmployees(@CurrentUser() currentUser) {
+    return this.usersService.getAllEmployees(currentUser);
   }
 
   @UseGuards(
@@ -83,7 +87,11 @@ export class UsersController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Get('/:id')
   async getUser(@CurrentUser() currentUser, @Param('id') id: string) {
@@ -96,7 +104,11 @@ export class UsersController {
 
   @UseGuards(
     JwtAuthGuard,
-    new RoleGuard([CONSTANTS.ROLES.SUPER_ADMIN, CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+    new RoleGuard([
+      CONSTANTS.ROLES.SUPER_ADMIN,
+      CONSTANTS.ROLES.ADMIN,
+      CONSTANTS.ROLES.EMPLOYEE,
+    ]),
   )
   @Patch('/:id')
   async updateUser(

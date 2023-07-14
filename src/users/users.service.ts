@@ -77,8 +77,17 @@ export class UsersService {
     return this.usersRepository.find({ where: { role: 'ADMIN' } });
   }
 
-  async getAllEmployees() {
-    return this.usersRepository.find({ where: { role: 'EMPLOYEE' } });
+  async getAllEmployees(currentUser) {
+    const { userId } = currentUser;
+    const currentUserOrganization = await this.usersRepository.findBy({
+      id: userId,
+    });
+    const requestingUserOrganization = currentUserOrganization[0].organization;
+    const orgId = requestingUserOrganization.id;
+    
+    return this.usersRepository.find({
+      where: { role: 'EMPLOYEE', organization: { id: orgId } },
+    });
   }
 
   async findAllUsers() {

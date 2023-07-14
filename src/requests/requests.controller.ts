@@ -38,6 +38,12 @@ export class RequestsController {
     return this.requestsService.findAllRequests();
   }
 
+  @Get('/returns')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  findApprovedRequests(@CurrentUser() currentUser) {
+    return this.requestsService.findApprovedRequests();
+  }
+
   @Get('/userRequests')
   @UseGuards(
     JwtAuthGuard,
@@ -45,6 +51,12 @@ export class RequestsController {
   )
   findUserRequests(@CurrentUser() currentUser) {
     return this.requestsService.findUserRequests(currentUser);
+  }
+
+  @Get('/employee/:id')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  findAnEmployeeRequests(@CurrentUser() currentUser, @Param('id') id: string) {
+    return this.requestsService.findAnEmployeeRequests(+id);
   }
 
   @Get('/employeesRequests')
@@ -62,7 +74,10 @@ export class RequestsController {
     return this.requestsService.findOneRequest(+id);
   }
 
-  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN,CONSTANTS.ROLES.EMPLOYEE]))
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
   @Patch(':id')
   update(
     @CurrentUser() currentUser,

@@ -92,6 +92,32 @@ export class RequestsService {
       requests: requests,
     };
   }
+  // for return module
+  async findApprovedRequests() {
+    const requests = await this.requestRepository.find({
+      where: { status: 'approved' },
+      order: { createdAt: 'DESC' },
+    });
+    return requests;
+  }
+
+  async findAnEmployeeRequests(id: number) {
+    // Find the user by ID
+    const user = await this.userRepository.findOneBy({ id: id });
+
+    if (!user) {
+      throw new NotFoundException(`User ${id} not found`);
+    }
+    const requests = await this.requestRepository.find({
+      where: { user: { id: id } },
+      order: { createdAt: 'DESC' },
+    });
+
+    return {
+      message: `Requests for user ${id}`,
+      requests: requests,
+    };
+  }
 
   async getEmployeesRequests() {
     const empRequests = await this.requestRepository.find({
@@ -131,7 +157,7 @@ export class RequestsService {
     request.requestType = requestType;
     request.description = description;
     request.subcategory = subcategory;
-    request.status  = status;
+    request.status = status;
     await this.requestRepository.save(request);
     return {
       message: `request ${id} updated successfully`,
