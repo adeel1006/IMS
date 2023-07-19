@@ -6,9 +6,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
-  ManyToOne,
 } from 'typeorm';
 import { Subcategory } from './subcategory.entity';
+import { Vendor } from 'src/vendor/entities/vendor.entity';
+import { Inventory } from 'src/inventory/entities/inventory.entity';
 
 @Entity()
 export class Category {
@@ -29,8 +30,11 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // @ManyToOne(()=>Request, (request)=>request.category)
-  // requestType: Request;
+  @OneToMany(() => Inventory, (item) => item.category)
+  items: Inventory[];
+
+  @OneToMany(() => Vendor, (vendor) => vendor.category)
+  vendors: Vendor[];
 
   @OneToMany(() => Subcategory, (subcategory) => subcategory.category, {
     cascade: true,

@@ -5,30 +5,39 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Vendor } from './entities/vendor.entity';
 import { In, Repository } from 'typeorm';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { Category } from 'src/category/entities/category.entity';
 
 @Injectable()
 export class VendorService {
   constructor(
     @InjectRepository(Vendor)
     private vendorRepository: Repository<Vendor>,
+    @InjectRepository(Category)
+    private readonly categoryRepository: Repository<Category>,
     @InjectRepository(Subcategory)
     private subcategoryRepository: Repository<Subcategory>,
   ) {}
 
   async createVendor(createVendorDto: CreateVendorDto) {
+    const category = await this.categoryRepository.findOne({
+      where: { id: +createVendorDto.category },
+    });
+    if (!category) {
+      throw new NotFoundException(`Category not found`);
+    }
+
+    const subcategoryPromises = createVendorDto.subCategory.map(
+      (subCategoryId) =>
+        this.subcategoryRepository.findOne({ where: { id: subCategoryId } }),
+    );
+    const subcategories = await Promise.all(subcategoryPromises);
+
     const vendor = this.vendorRepository.create({
       vendorName: createVendorDto.vendorName,
       contactNumber: createVendorDto.contactNumber,
-      category: createVendorDto.category,
+      category: category,
+      subcategories: subcategories,
     });
-
-    if (createVendorDto.subCategory?.length) {
-      const subCategoriesEntities = await this.subcategoryRepository
-        .createQueryBuilder('subcategory')
-        .whereInIds(createVendorDto.subCategory)
-        .getMany();
-      vendor.subcategories = subCategoriesEntities;
-    }
 
     await this.vendorRepository.save(vendor);
 
@@ -59,9 +68,17 @@ export class VendorService {
     if (!vendor) {
       throw new NotFoundException('Vendor not found!');
     }
+
+    const fetchCategory = await this.categoryRepository.findOne({
+      where: { id: +category },
+    });
+    if (!category) {
+      throw new NotFoundException(`Category not found`);
+    }
+
     vendor.vendorName = vendorName;
     vendor.contactNumber = contactNumber;
-    vendor.category = category;
+    vendor.category = fetchCategory;
 
     if (subCategory?.length) {
       const subCategoriesEntities = await this.subcategoryRepository.find({

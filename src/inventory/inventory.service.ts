@@ -5,32 +5,63 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Inventory } from './entities/inventory.entity';
 import { Repository } from 'typeorm';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { Category } from 'src/category/entities/category.entity';
+import { Vendor } from 'src/vendor/entities/vendor.entity';
 
 @Injectable()
 export class InventoryService {
   constructor(
     @InjectRepository(Inventory)
     private inventoryRepository: Repository<Inventory>,
+    @InjectRepository(Category)
+    private categoryRepository: Repository<Category>,
     @InjectRepository(Subcategory)
     private subcategoryRepository: Repository<Subcategory>,
+    @InjectRepository(Vendor)
+    private vendorRepository: Repository<Vendor>,
   ) {}
   async createItem(createInventoryDto: CreateInventoryDto) {
-    const { itemName, serialNumber, description, price, subCategoryId } =
-      createInventoryDto;
+    const {
+      itemName,
+      serialNumber,
+      description,
+      price,
+      category,
+      subCategoryId,
+      vendor,
+    } = createInventoryDto;
+    //fetch category & subcategory from db
+    const Category = await this.categoryRepository.findOneBy({
+      id: category,
+    });
+    if (!Category) {
+      throw new NotFoundException('Category not found');
+    }
+
     const subcategory = await this.subcategoryRepository.findOneBy({
       id: subCategoryId,
     });
-
     if (!subcategory) {
       throw new NotFoundException('Subcategory not found');
     }
+
+    //fetch Vendor
+    const Vendor = await this.vendorRepository.findOneBy({
+      id: vendor,
+    });
+    if (!Vendor) {
+      throw new NotFoundException('Vendor not exist.');
+    }
+
     const inventory = new Inventory();
     inventory.itemName = itemName;
     inventory.serialNumber = serialNumber;
+    inventory.category = Category;
+    inventory.subcategory = subcategory;
     inventory.description = description;
     inventory.price = price;
-    inventory.subcategory = subcategory;
-
+    inventory.vendor = Vendor;
+    
     await this.inventoryRepository.save(inventory);
 
     return {
@@ -56,7 +87,7 @@ export class InventoryService {
 
   async updateItem(id: number, updateInventoryDto: UpdateInventoryDto) {
     const subcategory = await this.subcategoryRepository.findOneBy({
-      id: updateInventoryDto.subCategoryId,
+      id: +updateInventoryDto.subCategoryId,
     });
 
     const item = new Inventory();

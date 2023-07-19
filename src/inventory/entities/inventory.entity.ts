@@ -1,4 +1,6 @@
+import { Category } from 'src/category/entities/category.entity';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { Vendor } from 'src/vendor/entities/vendor.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -7,6 +9,8 @@ import {
   UpdateDateColumn,
   ManyToOne,
   JoinColumn,
+  OneToMany,
+  OneToOne,
 } from 'typeorm';
 
 @Entity()
@@ -34,8 +38,15 @@ export class Inventory {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(()=> Subcategory, (subcategory)=>subcategory.items, {eager: true})
-  @JoinColumn({name:'subcategoryId'})
+  @ManyToOne(() => Category, (category) => category.items, { eager: true })
+  category: Category;
+
+  @ManyToOne(() => Subcategory, (subcategory) => subcategory.items, {
+    eager: true,
+  })
+  @JoinColumn({ name: 'subcategoryId' })
   subcategory: Subcategory;
 
+  @ManyToOne(() => Vendor, (vendor) => vendor.items, { eager: true })
+  vendor: Vendor;
 }

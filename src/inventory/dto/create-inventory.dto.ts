@@ -15,7 +15,7 @@ export class CreateInventoryDto {
 
   @IsNotEmpty()
   @IsString()
-  category: string;
+  category: number;
 
   @IsNotEmpty()
   @IsString()
@@ -24,5 +24,8 @@ export class CreateInventoryDto {
   @IsNotEmpty()
   @IsString()
   price: number;
+
+  @IsString()
+  vendor: number;
 
 }

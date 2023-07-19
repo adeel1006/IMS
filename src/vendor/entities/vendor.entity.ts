@@ -1,13 +1,17 @@
+import { Category } from 'src/category/entities/category.entity';
 import { Subcategory } from 'src/category/entities/subcategory.entity';
+import { Inventory } from 'src/inventory/entities/inventory.entity';
 import {
   Entity,
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToMany,
   ManyToMany,
+  JoinTable,
+  ManyToOne,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 
 @Entity()
@@ -21,10 +25,7 @@ export class Vendor {
   @Column()
   contactNumber: string;
 
-  @Column()
-  category: string;
-
-  @Column({nullable: true})
+  @Column({ nullable: true })
   totalSpendings: number;
 
   @Column({ nullable: true })
@@ -38,7 +39,14 @@ export class Vendor {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToMany(()=>Subcategory, (subcategories)=>subcategories.vendors, {eager: true})
-  @JoinColumn()
+  @OneToMany(() => Inventory, (item) => item.vendor)
+  items: Inventory[];
+
+  @ManyToOne(() => Category, (category) => category.vendors, { eager: true })
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @ManyToMany(() => Subcategory, { eager: true })
+  @JoinTable()
   subcategories: Subcategory[];
 }
