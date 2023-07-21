@@ -61,7 +61,7 @@ export class InventoryService {
     inventory.description = description;
     inventory.price = price;
     inventory.vendor = Vendor;
-    
+
     await this.inventoryRepository.save(inventory);
 
     return {
@@ -86,8 +86,16 @@ export class InventoryService {
   }
 
   async updateItem(id: number, updateInventoryDto: UpdateInventoryDto) {
+    const category = await this.categoryRepository.findOneBy({
+      id: +updateInventoryDto.category,
+    });
+
     const subcategory = await this.subcategoryRepository.findOneBy({
       id: +updateInventoryDto.subCategoryId,
+    });
+
+    const Vendor = await this.vendorRepository.findOneBy({
+      id: +updateInventoryDto.vendor,
     });
 
     const item = new Inventory();
@@ -95,7 +103,9 @@ export class InventoryService {
     item.serialNumber = updateInventoryDto.serialNumber;
     item.description = updateInventoryDto.description;
     item.price = updateInventoryDto.price;
+    item.category = category;
     item.subcategory = subcategory;
+    item.vendor = Vendor;
 
     const checkItem = await this.inventoryRepository.findOneBy({ id });
     if (!checkItem) {
