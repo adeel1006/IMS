@@ -1,4 +1,3 @@
-import { Request } from 'src/requests/entities/request.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,

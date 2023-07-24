@@ -32,6 +32,15 @@ export class CategoryController {
     return this.categoryService.createCategory(createCategoryDto);
   }
 
+  @Get('list')
+  @UseGuards(
+    JwtAuthGuard,
+    new RoleGuard([CONSTANTS.ROLES.ADMIN, CONSTANTS.ROLES.EMPLOYEE]),
+  )
+  findAllCategoriesList(@CurrentUser() currentUser) {
+    return this.categoryService.findAllCategoriesList();
+  }
+
   @Get()
   @UseGuards(
     JwtAuthGuard,

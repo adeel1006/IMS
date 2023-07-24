@@ -33,7 +33,38 @@ export class CategoryService {
   }
 
   async findAllCategory() {
-    return await this.categoryRepository.find();
+    return await this.categoryRepository.find({
+      relations: ['vendors', 'items'],
+      order: { createdAt: 'DESC' },
+    });
+  }
+  async findAllCategoriesList() {
+    const categories = await this.categoryRepository.find({
+      relations: ['vendors', 'items'],
+      order: { createdAt: 'DESC' },
+    });
+    return categories.map((category) => {
+      let notAvailable = 'N/A';
+      return {
+        ID: category.id,
+        CategoryName: category.categoryName,
+        NumberofSubcategories: category.subcategories.length || notAvailable,
+        NumberOfVendors: category.vendors.length || notAvailable,
+        Action: 'Add or Delete',
+        subcategories: category.subcategories.map((subcategory) => {
+          const itemsInSubcategory = category.items.filter(
+            (item) => item.subcategory.id === subcategory.id,
+          );
+          return {
+            SubcategoryName: subcategory.name,
+            VendorName:
+              itemsInSubcategory[0]?.vendor?.vendorName || notAvailable,
+            ItemsQuantity: itemsInSubcategory.length,
+            Action: 'View',
+          };
+        }),
+      };
+    });
   }
 
   async findOneCategory(id: number) {
