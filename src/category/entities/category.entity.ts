@@ -29,10 +29,14 @@ export class Category {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Inventory, (item) => item.category)
+  @OneToMany(() => Inventory, (item) => item.category, {
+    cascade: true,
+  })
   items: Inventory[];
 
-  @OneToMany(() => Vendor, (vendor) => vendor.category)
+  @OneToMany(() => Vendor, (vendor) => vendor.category, {
+    cascade: true,
+  })
   vendors: Vendor[];
 
   @OneToMany(() => Subcategory, (subcategory) => subcategory.category, {

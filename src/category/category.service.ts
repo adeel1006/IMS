@@ -68,29 +68,52 @@ export class CategoryService {
   }
 
   async findOneCategory(id: number) {
-    const category = await this.categoryRepository.findOneBy({ id });
+    const category = await this.categoryRepository
+      .createQueryBuilder('category')
+      .where('category.id = :id', { id })
+      .leftJoinAndSelect('category.subcategories', 'subcategories')
+      .leftJoinAndSelect('category.vendors', 'vendors')
+      .leftJoinAndSelect('category.items', 'items')
+      .leftJoinAndSelect('items.vendor', 'vendor')
+      .getOne();
+
     if (!category) {
-      throw new NotFoundException(`category ${id} not found`);
+      throw new NotFoundException(`Category with ID #${id} not found`);
     }
+
     return {
-      message: `category with ID #${id}`,
+      message: `Category with ID #${id}`,
       category: category,
     };
   }
 
   async updateCategory(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const category = new Category();
-    category.categoryName = updateCategoryDto.categoryName;
+    const existingCategory = await this.categoryRepository.findOneBy({ id });
 
-    const checkCategoryId = await this.categoryRepository.findOneBy({ id });
-    if (!checkCategoryId) {
+    if (!existingCategory) {
       throw new NotFoundException(`Category ${id} not found`);
     }
 
-    const updateCategory = await this.categoryRepository.update(id, category);
+    if (updateCategoryDto.categoryName) {
+      existingCategory.categoryName = updateCategoryDto.categoryName;
+      await this.categoryRepository.save(existingCategory);
+    }
+
+    if (
+      updateCategoryDto.subCategoryName &&
+      updateCategoryDto.subCategoryName.length > 0
+    ) {
+      for (const subCategoryName of updateCategoryDto.subCategoryName) {
+        const subcategory = new Subcategory();
+        subcategory.name = subCategoryName;
+        subcategory.category = existingCategory;
+        await this.subcategoryRepository.save(subcategory);
+      }
+    }
+
     return {
       message: `Category ${id} Updated Successfully`,
-      category: category,
+      category: existingCategory,
     };
   }
 
