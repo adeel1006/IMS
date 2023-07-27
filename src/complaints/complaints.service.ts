@@ -91,6 +91,49 @@ export class ComplaintsService {
     };
   }
 
+  async findEmployeeComplaintsCountByMonth() {
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+
+    const queryBuilder =
+      this.complaintRepository.createQueryBuilder('complaint');
+
+    const empComplaintsByMonthCount = await queryBuilder
+      .select('EXTRACT(MONTH FROM complaint.createdAt)', 'month')
+      .addSelect('COUNT(*)', 'number')
+      .innerJoin('complaint.user', 'user')
+      .where('user.role = :role', { role: 'EMPLOYEE' })
+      .andWhere('EXTRACT(YEAR FROM complaint.createdAt) = :year', {
+        year: currentYear,
+      }) // Filter by current year
+      .groupBy('month')
+      .orderBy('month', 'ASC')
+      .getRawMany();
+
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
+    const result = empComplaintsByMonthCount.map((item) => ({
+      name: monthNames[item.month - 1],
+      number: parseInt(item.number, 10),
+    }));
+    console.log(result);
+
+    return result;
+  }
+
   async updateComplaint(id: number, updateComplaintDto: UpdateComplaintDto) {
     const checkComplaintId = await this.complaintRepository.findOneBy({ id });
     if (!checkComplaintId) {

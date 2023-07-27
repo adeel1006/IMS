@@ -71,7 +71,10 @@ export class InventoryService {
   }
 
   async findAllItems() {
-    return await this.inventoryRepository.find();
+    return await this.inventoryRepository.find({
+      relations: ["category"],
+      order: {createdAt: "DESC"}
+    });
   }
 
   async findOneItem(id: number) {

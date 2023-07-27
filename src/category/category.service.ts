@@ -38,6 +38,41 @@ export class CategoryService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async getCategoriesWithItemCount() {
+    const categories = await this.categoryRepository.find({
+      relations: ['items'],
+    });
+
+    const categoriesWithItemCount = categories
+      ?.map((category) => ({
+        name: category.categoryName,
+        number: category.items.length,
+      }))
+      .filter((category) => category.number > 0);
+
+    return categoriesWithItemCount;
+  }
+
+  // async getCategoriesWithItemCount(): Promise<{ name: string; assigned: number; unassigned: number }[]> {
+  //   const categories = await this.categoryRepository.find({
+  //     relations: ['items', 'items.vendor'],
+  //   });
+
+  //   const categoriesWithItemCount = categories.map((category) => {
+  //     const assignedCount = category.items.filter((item) => item.vendor.id > 0).length;
+  //     const unassignedCount = category.items.length - assignedCount;
+
+  //     return {
+  //       name: category.categoryName,
+  //       assigned: assignedCount,
+  //       unassigned: unassignedCount,
+  //     };
+  //   });
+
+  //   return categoriesWithItemCount;
+  // }
+
   async findAllCategoriesList() {
     const categories = await this.categoryRepository.find({
       relations: ['vendors', 'items'],

@@ -41,6 +41,12 @@ export class CategoryController {
     return this.categoryService.findAllCategoriesList();
   }
 
+  @Get('inventory')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  getCategoriesWithItemCount(@CurrentUser() currentUser) {
+    return this.categoryService.getCategoriesWithItemCount();
+  }
+
   @Get()
   @UseGuards(
     JwtAuthGuard,

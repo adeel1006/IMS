@@ -47,8 +47,14 @@ export class ComplaintsController {
     ]),
   )
   @Get()
-  findAll() {
+  findAll(@CurrentUser() currentUser) {
     return this.complaintsService.findAllComplaints();
+  }
+
+  @Get('empComplaintCount')
+  @UseGuards(JwtAuthGuard, new RoleGuard([CONSTANTS.ROLES.ADMIN]))
+  async getAdminsByMonth(@CurrentUser() currentUser) {
+    return await this.complaintsService.findEmployeeComplaintsCountByMonth();
   }
 
   @Get('/userComplaints')
