@@ -75,6 +75,7 @@ export class User extends BaseEntity {
 
   @ManyToOne(() => Organization, (organization) => organization.users, {
     eager: true,
+    onDelete: 'CASCADE',
   })
   @JoinColumn()
   organization: Organization;

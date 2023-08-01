@@ -84,7 +84,7 @@ export class UsersService {
     });
     const requestingUserOrganization = currentUserOrganization[0].organization;
     const orgId = requestingUserOrganization.id;
-    
+
     return this.usersRepository.find({
       where: { role: 'EMPLOYEE', organization: { id: orgId } },
     });
@@ -105,6 +105,18 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
+    let organization = [];
+    if (updateUserDto?.organization) {
+      organization = await this.organizationsRepository.findBy({
+        id: +updateUserDto.organization,
+      });
+    }
+
+    if (!organization) {
+      throw new NotFoundException(
+        `Organization with ID ${+updateUserDto.organization} not found`,
+      );
+    }
     // Update the user properties
     user.username = updateUserDto.username;
     user.email = updateUserDto.email;
@@ -115,15 +127,17 @@ export class UsersService {
     user.companyExperience = updateUserDto.companyExperience;
     user.totalExperience = updateUserDto.totalExperience;
     user.education = updateUserDto.education;
+    user.organization = organization[0];
 
     // Upload the new image to Cloudinary
     if (updateUserDto.image) {
       const cloudinaryResponse = await cloudinary.v2.uploader.upload(
         updateUserDto.image,
       );
-      const cloudinaryURL = cloudinaryResponse.secure_url;
+      let cloudinaryURL = cloudinaryResponse.secure_url;
       user.image = cloudinaryURL;
     }
+
     return this.usersRepository.save(user);
   }
 

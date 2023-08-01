@@ -34,7 +34,9 @@ export class OrganizationService {
   }
 
   async findAllOrganizations() {
-    return await this.organizationRepository.find();
+    return await this.organizationRepository.find({
+      order: { updatedAt: 'DESC' },
+    });
   }
 
   async findOneOrganization(id: number) {
@@ -58,7 +60,18 @@ export class OrganizationService {
       throw new NotFoundException(`Organization with ID-${id} not found`);
     }
 
+    let cloudinaryResponse;
+    let cloudinaryURL;
+    if (updateOrganizationDto.logo) {
+      cloudinaryResponse = await cloudinary.v2.uploader.upload(
+        updateOrganizationDto.logo,
+      );
+
+      cloudinaryURL = cloudinaryResponse.secure_url;
+    }
+
     org.name = updateOrganizationDto.name;
+    org.logo = cloudinaryURL;
     org.email = updateOrganizationDto.email;
     org.bio = updateOrganizationDto.bio;
     org.address = updateOrganizationDto.address;

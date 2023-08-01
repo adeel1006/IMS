@@ -129,7 +129,6 @@ export class ComplaintsService {
       name: monthNames[item.month - 1],
       number: parseInt(item.number, 10),
     }));
-    console.log(result);
 
     return result;
   }
